@@ -1,0 +1,84 @@
+/* ---------- GERAL ---------- */
+body {
+  margin-top: 20px; /* Adiciona o espaço de 20px do topo da tela */
+}
+
+/* ---------- TITULOS ---------- */
+h1, h2, h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* ---------- GRÁFICOS EM CARDS ---------- */
+.card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 10px; /* <- espaçamento entre os cards */
+}
+
+/* Ajuste para o espaço de 20px no topo dos gráficos */
+.card-body dcc-graph {
+  margin-top: 20px; /* Adiciona o espaçamento no topo de cada gráfico */
+}
+
+/* ---------- Barra lateral fixa (Exemplo de sidebar) ---------- */
+.fixed-radio-items {
+  position: fixed;    /* Fixa o RadioItems na tela */
+  top: 20px;          /* Coloca o componente no topo da tela */
+  bottom: 20px;       /* Distância da parte inferior */
+  left: 20px;         /* Distância da esquerda */
+  z-index: 1000;      /* Garante que o RadioItems fique sobre outros elementos */
+  width: 200px;       /* Ajuste a largura conforme necessário (equivalente ao sm=2) */
+  height: 96vh;      /* A altura do card será igual à altura da tela */
+  padding: 20px;      /* Ajuste o preenchimento dentro do RadioItems */
+  margin: 0;          /* Remove margem externa */
+  background-color: #ffffff; /* Cor de fundo do RadioItems */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar o componente */
+}
+
+/* Desktop (padrão): sidebar lateral */
+#sidebar {
+  display: block;
+  position: fixed;
+}
+
+/* Celular: barra horizontal fixa no topo */
+@media screen and (max-width: 768px) {
+  #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      z-index: 1000;
+      background-color: white;
+      padding: 10px 15px;
+      border-bottom: 1px solid #ccc;
+  }
+
+  .fixed-radio-items {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 10px;
+  }
+
+  .fixed-radio-items img {
+      display: none; /* esconde as imagens para economizar espaço */
+  }
+
+  #main_variable label {
+      margin-right: 10px;
+      font-size: 13px;
+  }
+
+  #dynamic-content {
+      margin-top: 100px;  /* espaço para a barra no topo */
+      width: 100%;
+  }
+}
