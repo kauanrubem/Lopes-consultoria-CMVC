@@ -74,4 +74,4 @@ def update_layout(selected_value):
     
 # Rodar o servidor
 if __name__ == "__main__":
-    app.run(port=8070, debug=True)
+    app.run(debug=True)
