@@ -5,8 +5,9 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # Carregar os dados do arquivo "Projeção folha - CMVC.xlsx"
-file_path = 'dataset/Projeção folha - CMVC.xlsx'
-df_projecao_2 = pd.read_excel(file_path, sheet_name='Projeção (2)')
+from utils import carregar_dados_drive
+df_projecao_2 = carregar_dados_drive()
+
 
 # Limpar e processar os dados
 df_projecao_2_cleaned = df_projecao_2.iloc[2:].reset_index(drop=True)

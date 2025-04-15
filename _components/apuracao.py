@@ -5,12 +5,13 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # Carregar a planilha
-file_path = 'dataset/Projeção folha - CMVC.xlsx'
-df = pd.read_excel(file_path, sheet_name="Projeção (2)", header=None)
+from utils import carregar_dados_drive
+df_projecao_2 = carregar_dados_drive()
 
 # --- DADOS DO GRÁFICO DE PIZZA E TOTALIZADORES ---
-valor_estimativa_total = pd.to_numeric(df.iloc[215, 7], errors='coerce')  # linha 216
-valor_apuracao = pd.to_numeric(df.iloc[216, 7], errors='coerce')  # linha 217
+# Acessando o valor da estimativa total e apuração
+valor_estimativa_total = pd.to_numeric(df_projecao_2.iloc[214, 7], errors='coerce')  # linha 216
+valor_apuracao = pd.to_numeric(df_projecao_2.iloc[215, 7], errors='coerce')  # Linha 216 (índice 215), para "Apuração CF art. 29-A"
 
 valor_apuracao_percent = round(valor_apuracao * 100, 2)
 complemento = round(100 - valor_apuracao_percent, 2)
@@ -28,7 +29,7 @@ fig_pizza.update_layout(
 )
 
 # --- DADOS MENSAIS DAS TABELAS ---
-df_tabelas = df.iloc[195:211].reset_index(drop=True)
+df_tabelas = df_projecao_2.iloc[195:211].reset_index(drop=True)
 df_tabelas.columns = ['Comp_Agentes', 'Agentes_Politicos', 'C2',
                       'Servidores', 'C4', 'C5',
                       'Comp_Estimativa', 'Estimativa_Total', 'C8',
@@ -43,7 +44,7 @@ df_dados['Apuracao_29A'] = pd.to_numeric(df_dados['Apuracao_29A'], errors='coerc
 df_dados['Comp'] = pd.to_datetime(df_dados['Comp_Agentes']).dt.strftime('%b/%Y')
 
 # --- TOTAIS (linha 211) ---
-linha_total = df.iloc[210]
+linha_total = df_projecao_2.iloc[209]
 total_agentes = pd.to_numeric(linha_total[1], errors='coerce')
 total_servidores = pd.to_numeric(linha_total[3], errors='coerce')
 total_estimativa = pd.to_numeric(linha_total[7], errors='coerce')

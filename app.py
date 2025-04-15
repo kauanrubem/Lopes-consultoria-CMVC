@@ -74,4 +74,4 @@ def update_layout(selected_value):
     
 # Rodar o servidor
 if __name__ == "__main__":
-    app.run(debug=False, port=8080, host="0.0.0.0")  # Para rodar em qualquer IP
+    app.run(debug=False, port=8050, host="0.0.0.0")  # Para rodar em qualquer IP
