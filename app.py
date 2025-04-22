@@ -2,83 +2,92 @@ import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-from _components.inicial import inicial_layout  # Importando o layout inicial
-from _components.efetivos import efetivos_layout  # Importando o layout de Efetivos
-from _components.comissionados import comissionados_layout  # Importando o layout de Comissionados
-from _components.agentes_politicos import agentes_politicos_layout  # Importando o layout de Agentes Políticos
-from _components.estagiarios import estagiarios_layout  # Importando o layout de Estagiários  
-from _components.pensionistas import pensionistas_layout  # Importando o layout de Pensionistas
-from _components.aposentados import aposentados_layout  # Importando o layout de Aposentados
-from _components.total import total_layout  # Importando o layout de Total
-from _components.apuracao import apuracao_layout  # Importando o layout da apuração
 
-# Inicializando o app Dash
+# Layouts e callbacks dos componentes
+from _components.inicial import inicial_layout
+from _components.efetivos import layout_efetivos, registrar_callbacks_efetivos
+from _components.comissionados import layout_comissionados, registrar_callbacks_comissionados
+from _components.agentes_politicos import layout_agentes_politicos, registrar_callbacks_agentes
+from _components.estagiarios import layout_estagiarios, registrar_callbacks_estagiarios
+from _components.pensionistas import layout_pensionistas, registrar_callbacks_pensionistas
+from _components.aposentados import layout_aposentados, registrar_callbacks_aposentados
+from _components.total import layout_total, registrar_callbacks_total
+from _components.apuracao import layout_apuracao, registrar_callbacks_apuracao
+from utils import carregar_dados_drive
+
+# Inicialização do Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
 server = app.server
-
-# Configurações
 app.config.suppress_callback_exceptions = True
 
 # Layout do aplicativo
 app.layout = dbc.Container([
+    dcc.Interval(id='interval-update', interval=5 * 1000, n_intervals=0),  # Atualiza a cada 5 segundos
+    dcc.Store(id='data-store'),  # Armazena os dados atualizados da planilha
 
-    # Gráfico de apuração - agora acima
-    dbc.Row([ 
-        dbc.Col(
-            html.Div(id='apuracao-container'),
-            xs=12, md=12
-        ),
+    # Gráfico de apuração fixo
+    dbc.Row([
+        dbc.Col(html.Div(id='apuracao-container'), xs=12)
     ], style={"margin-left": "240px", "padding-right": "0px"}),
 
-    # Conteúdo dinâmico abaixo
-    dbc.Row([ 
+    # Conteúdo dinâmico (layouts por regime)
+    dbc.Row([
         dbc.Col(inicial_layout, xs=12, md=3, lg=2),
-        dbc.Col(
-            html.Div(id='dynamic-content-container'),
-            xs=12, md=9, lg=10,
-        ),
-    ]),
-
-    # Intervalo para atualizar os gráficos a cada 5 segundos
-    dcc.Interval(
-        id='interval-update',
-        interval=5 * 1000,  # Atualiza a cada 5 segundos (5 * 1000 ms)
-        n_intervals=0  # Inicializa com 0 intervalos
-    )
+        dbc.Col(html.Div(id='dynamic-content-container'), xs=12, md=9, lg=10),
+    ])
 ], fluid=True)
 
-# Atualizando o gráfico de apuração quando o item do checklist for selecionado
+# Callback para atualizar o layout de apuração
 @app.callback(
-    Output('apuracao-container', 'children'),  # Atualizando o novo container para apuração
-    [Input('apuracao_checklist', 'value'), Input('interval-update', 'n_intervals')]  # O Input do checklist e do Interval
+    Output('apuracao-container', 'children'),
+    [Input('apuracao_checklist', 'value')]
 )
-def update_apuracao_layout(selected_values, n_intervals):
-    if "Apuracao_CF_art_29_A" in selected_values:  # Se "Apuração CF art. 29-A" estiver selecionado
-        return apuracao_layout  # Exibe o gráfico de apuração
+def update_apuracao_layout(selected_values):
+    if "Apuracao_CF_art_29_A" in selected_values:
+        return layout_apuracao()
 
-# Atualiza o layout com base no valor selecionado
+# Callback para trocar o layout com base na seleção
 @app.callback(
-    Output('dynamic-content-container', 'children'),  # Alterei o ID aqui
-    [Input('main_variable', 'value'), Input('interval-update', 'n_intervals')]  # O dropdown de mês foi removido
+    Output('dynamic-content-container', 'children'),
+    [Input('main_variable', 'value')]
 )
-def update_layout(selected_value, n_intervals):
+def update_layout(selected_value):
     if selected_value == "Efetivos":
-        return efetivos_layout  # Retorna o layout de Efetivos
+        return layout_efetivos()
     elif selected_value == "Comissionados":
-        return comissionados_layout
+        return layout_comissionados()
     elif selected_value == "Agentes Políticos":
-        return agentes_politicos_layout
+        return layout_agentes_politicos()
     elif selected_value == "Estagiários":
-        return estagiarios_layout
+        return layout_estagiarios()
     elif selected_value == "Pensionistas":
-        return pensionistas_layout
+        return layout_pensionistas()
     elif selected_value == "Aposentados":
-        return aposentados_layout
+        return layout_aposentados()
     elif selected_value == "Total":
-        return total_layout
+        return layout_total()
     else:
         return html.H3("Selecione uma opção válida.")
 
+# Callback que recarrega os dados da planilha periodicamente
+@app.callback(
+    Output('data-store', 'data'),
+    Input('interval-update', 'n_intervals')
+)
+def atualizar_dados(_):
+    df = carregar_dados_drive()
+    return df.to_dict('records')
+
+# Registro de todos os callbacks por regime
+registrar_callbacks_efetivos(app)
+registrar_callbacks_comissionados(app)
+registrar_callbacks_agentes(app)
+registrar_callbacks_estagiarios(app)
+registrar_callbacks_pensionistas(app)
+registrar_callbacks_aposentados(app)
+registrar_callbacks_total(app)
+registrar_callbacks_apuracao(app)
+
 # Rodar o servidor
 if __name__ == "__main__":
-    app.run(debug=False, port=8050, host="0.0.0.0")  # Para rodar em qualquer IP
+    app.run(debug=False, port=8050, host="0.0.0.0")
