@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_pensionistas():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_pensionistas', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_pensionistas')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_pensionistas', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_pensionistas')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_pensionistas', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_pensionistas')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_pensionistas', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_pensionistas')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_pensionistas', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_pensionistas')
         ])), xs=12, md=12),
     ])
 

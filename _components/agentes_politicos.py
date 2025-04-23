@@ -8,28 +8,28 @@ def layout_agentes_politicos():
     return dbc.Row([  
         # Gráfico 1 (fig1_agentes)
         dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig1_agentes', style={'height': '400px', 'width': '100%', 'padding': '0'})
-        ])), xs=12, md=12),
+            dcc.Graph(id='fig1_agentes')
+        ])), width=12),
 
         # Gráfico 2 (fig0_agentes)
         dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig0_agentes', style={'height': '400px', 'width': '100%', 'padding': '0'})
-        ])), xs=12, md=12),
+            dcc.Graph(id='fig0_agentes')
+        ])), width=12),
 
         # Gráfico 3 (fig2_agentes)
         dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig2_agentes', style={'height': '400px', 'width': '100%', 'padding': '0'})
-        ])), xs=12, md=12),
+            dcc.Graph(id='fig2_agentes')
+        ])), width=12),
 
         # Gráfico 4 (fig3_agentes)
         dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig3_agentes', style={'height': '400px', 'width': '100%', 'padding': '0'})
-        ])), xs=12, md=12),
+            dcc.Graph(id='fig3_agentes')
+        ])), width=12),
 
         # Gráfico 5 (fig4_agentes)
         dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig4_agentes', style={'height': '400px', 'width': '100%', 'padding': '0'})
-        ])), xs=12, md=12),
+            dcc.Graph(id='fig4_agentes')
+        ])), width=12),
     ])
 
 def registrar_callbacks_agentes(app):

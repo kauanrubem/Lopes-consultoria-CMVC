@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_estagiarios():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_estagiarios', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_estagiarios')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_estagiarios', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_estagiarios')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_estagiarios', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_estagiarios')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_estagiarios', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_estagiarios')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_estagiarios', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_estagiarios')
         ])), xs=12, md=12),
     ])
 

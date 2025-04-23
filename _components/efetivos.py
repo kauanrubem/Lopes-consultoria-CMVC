@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_efetivos():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_efetivos', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_efetivos')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_efetivos', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_efetivos')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_efetivos', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_efetivos')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_efetivos', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_efetivos')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_efetivos', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_efetivos')
         ])), xs=12, md=12),
     ])
 

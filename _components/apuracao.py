@@ -10,19 +10,19 @@ def layout_apuracao():
         # Gráfico de Pizza
         dbc.Col(dbc.Card(dbc.CardBody([
             dcc.Graph(id='grafico-pizza'),
-            html.H6(id='texto-pizza', style={"textAlign": "left", "marginTop": "15px"})
+            html.H6(id='texto-pizza')
         ])), width=12),
 
         # Gráfico INSS Patronal
         dbc.Col(dbc.Card(dbc.CardBody([
             dcc.Graph(id='grafico-inss'),
-            html.H6(id='texto-inss', style={"textAlign": "center", "marginTop": "15px"})
+            html.H6(id='texto-inss')
         ])), width=6),
 
         # Gráfico Estimativa x Apuração
         dbc.Col(dbc.Card(dbc.CardBody([
             dcc.Graph(id='grafico-apuracao'),
-            html.H6(id='texto-apuracao', style={"textAlign": "center", "marginTop": "15px"})
+            html.H6(id='texto-apuracao')
         ])), width=6),
     ])
 

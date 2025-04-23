@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_aposentados():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_aposentados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_aposentados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_aposentados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_aposentados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_aposentados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_aposentados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_aposentados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_aposentados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_aposentados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_aposentados')
         ])), xs=12, md=12),
     ])
 
@@ -43,7 +43,7 @@ def registrar_callbacks_aposentados(app):
         df['Regime'] = df['Regime'].str.strip()
         df = df[df['Regime'] == 'Aposentado'].copy()
 
-        current_period = None
+        current_period = None   
         df['Período'] = pd.NA
         for index, row in df.iterrows():
             if pd.notna(row['Regime']) and '2025' in str(row['Regime']):

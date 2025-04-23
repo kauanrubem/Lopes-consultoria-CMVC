@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_total():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_total', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_total')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_total', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_total')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_total', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_total')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_total', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_total')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_total', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_total')
         ])), xs=12, md=12),
     ])
 

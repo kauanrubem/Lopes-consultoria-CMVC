@@ -1,9 +1,6 @@
-import dash
-from dash import dcc, html
+from dash import Dash, dcc, html  # Corrigido o import de html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-
-# Layouts e callbacks dos componentes
 from _components.inicial import inicial_layout
 from _components.efetivos import layout_efetivos, registrar_callbacks_efetivos
 from _components.comissionados import layout_comissionados, registrar_callbacks_comissionados
@@ -16,13 +13,18 @@ from _components.apuracao import layout_apuracao, registrar_callbacks_apuracao
 from utils import carregar_dados_drive
 
 # Inicialização do Dash
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
+app = Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
+
+app.title = "Apuração de Dados CMVC"
+app._favicon = "assets/favicon.ico"  # Define o favicon do aplicativo
+
+# Configuração do servidor
 server = app.server
 app.config.suppress_callback_exceptions = True
-
+    
 # Layout do aplicativo
 app.layout = dbc.Container([
-    dcc.Interval(id='interval-update', interval=5 * 1000, n_intervals=0),  # Atualiza a cada 5 segundos
+    dcc.Interval(id='interval-update', interval=5 * 60 * 1000, n_intervals=0),
     dcc.Store(id='data-store'),  # Armazena os dados atualizados da planilha
 
     # Gráfico de apuração fixo
@@ -30,10 +32,14 @@ app.layout = dbc.Container([
         dbc.Col(html.Div(id='apuracao-container'), xs=12)
     ], style={"margin-left": "240px", "padding-right": "0px"}),
 
+    # Checklist de apuração
+    dbc.Row([
+        dbc.Col(html.Div(id='dynamic-content-container'), xs=12)
+    ], style={"margin-left": "240px", "padding-right": "0px"}),
+
     # Conteúdo dinâmico (layouts por regime)
     dbc.Row([
-        dbc.Col(inicial_layout, xs=12, md=3, lg=2),
-        dbc.Col(html.Div(id='dynamic-content-container'), xs=12, md=9, lg=10),
+        dbc.Col(inicial_layout),
     ])
 ], fluid=True)
 

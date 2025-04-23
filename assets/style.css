@@ -31,9 +31,8 @@ h1, h2, h3 {
   top: 20px;          /* Coloca o componente no topo da tela */
   bottom: 20px;       /* Distância da parte inferior */
   left: 20px;         /* Distância da esquerda */
-  z-index: 1000;      /* Garante que o RadioItems fique sobre outros elementos */
   width: 200px;       /* Ajuste a largura conforme necessário (equivalente ao sm=2) */
-  height: 96vh;      /* A altura do card será igual à altura da tela */
+  height: 96vh;       /* A altura do card será igual à altura da tela */
   padding: 20px;      /* Ajuste o preenchimento dentro do RadioItems */
   margin: 0;          /* Remove margem externa */
   background-color: #ffffff; /* Cor de fundo do RadioItems */
@@ -46,39 +45,27 @@ h1, h2, h3 {
   position: fixed;
 }
 
-/* Celular: barra horizontal fixa no topo */
+/* Celular: remover a barra lateral completamente e fazer os gráficos ocuparem toda a tela */
 @media screen and (max-width: 768px) {
+  /* Remove o card completo com RadioItems */
   #sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      z-index: 1000;
-      background-color: white;
-      padding: 10px 15px;
-      border-bottom: 1px solid #ccc;
+      display: none; /* Barra lateral removida */
   }
 
   .fixed-radio-items {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 10px;
+      display: none; /* Esconde o conteúdo do card, incluindo o RadioItems */
   }
 
-  .fixed-radio-items img {
-      display: none; /* esconde as imagens para economizar espaço */
-  }
-
-  #main_variable label {
-      margin-right: 10px;
-      font-size: 13px;
-  }
-
+  /* Ajusta o conteúdo para ocupar 100% da largura da tela */
   #dynamic-content {
-      margin-top: 100px;  /* espaço para a barra no topo */
-      width: 100%;
+      margin-top: 0;  /* Remove o espaço superior para os gráficos */
+      width: 100%;    /* Faz os gráficos ocuparem toda a largura disponível */
+      height: 100vh;  /* Ajusta a altura para ocupar a tela inteira */
+  }
+
+  /* Faz com que os gráficos ocupem a tela inteira */
+  .dcc-graph {
+    width: 100%; /* Gráficos ocupam 100% da largura */
+    height: 100%; /* Gráficos ocupam toda a altura do contêiner */
   }
 }

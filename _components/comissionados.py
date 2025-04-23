@@ -7,19 +7,19 @@ import plotly.graph_objects as go
 def layout_comissionados():
     return dbc.Row([
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_comissionados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig1_comissionados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_comissionados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig0_comissionados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_comissionados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig2_comissionados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_comissionados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig3_comissionados')
         ])), xs=12, md=12),
         dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_comissionados', style={'height': '400px', 'width': '100%', 'padding': '0'})
+            dcc.Graph(id='fig4_comissionados')
         ])), xs=12, md=12),
     ])
 

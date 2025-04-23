@@ -6,9 +6,9 @@ import dash_bootstrap_components as dbc
 inicial_layout = dbc.Row([ 
     dbc.Col([ 
         dbc.Card([ 
-            html.Img(src="assets/camara_municipal_VCA.jpg", style={"width": "100%"}),
+            html.Img(src="assets/camara_municipal_VCA.jpg"),
             html.Hr(),
-            html.Img(src="assets/LOPES CONSULTORIA.png", style={"width": "100%"}),
+            html.Img(src="assets/LOPES CONSULTORIA.png"),
             html.Hr(),
             
             # Adicionando o Checklist com a opção "Apuração CF art. 29-A"
