@@ -24,23 +24,24 @@ app.config.suppress_callback_exceptions = True
     
 # Layout do aplicativo
 app.layout = dbc.Container([
-    dcc.Interval(id='interval-update', interval=5 * 60 * 1000, n_intervals=0),
+    dcc.Interval(id='interval-update', interval= 10 *  1000, n_intervals=0),
     dcc.Store(id='data-store'),  # Armazena os dados atualizados da planilha
-
-    # Gráfico de apuração fixo
-    dbc.Row([
-        dbc.Col(html.Div(id='apuracao-container'), xs=12)
-    ], style={"margin-left": "240px", "padding-right": "0px"}),
-
-    # Checklist de apuração
-    dbc.Row([
-        dbc.Col(html.Div(id='dynamic-content-container'), xs=12)
-    ], style={"margin-left": "240px", "padding-right": "0px"}),
 
     # Conteúdo dinâmico (layouts por regime)
     dbc.Row([
         dbc.Col(inicial_layout),
-    ])
+    ]),
+
+    # Gráfico de apuração fixo
+    dbc.Row([
+        dbc.Col(html.Div(id='apuracao-container'), xs=12)
+    ]),
+
+    # Checklist de apuração
+    dbc.Row([
+        dbc.Col(html.Div(id='dynamic-content-container'), xs=12)
+    ]),
+
 ], fluid=True)
 
 # Callback para atualizar o layout de apuração

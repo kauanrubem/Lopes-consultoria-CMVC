@@ -1,95 +1,78 @@
-/* ---------- GERAL ---------- */
+/* GERAL */
 body {
-  margin-top: 20px; /* Adiciona o espaço de 20px do topo da tela */
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-/* ---------- TITULOS ---------- */
-h1, h2, h3 {
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 20px;
-  margin-bottom: 20px;
+/* Barra lateral fixa */
+.fixed-radio-items {
+  width: 14%;  /* Define a largura da barra lateral como 14% */
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  padding: 10px;
+  background-color: #f8f9fa;  /* Cor de fundo suave */
+  border-right: 2px solid #dee2e6; /* Linha de separação */
+}
+#apuracao-container {
+  width: 86%;  /* A área dos gráficos ocupará os 86% restantes */
+  margin-left: 14%;  /* Desloca os gráficos para a direita, ocupando 86% da tela */
+}
+/* Configuração dos gráficos */
+#dynamic-content-container {
+  width: 86%;  /* A área dos gráficos ocupará os 86% restantes */
+  margin-left: 14%;  /* Desloca os gráficos para a direita, ocupando 86% da tela */
 }
 
-/* ---------- GRÁFICOS EM CARDS ---------- */
+/* Cards de gráficos */
 .card {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   background-color: white;
-  padding: 10px;
-  margin-bottom: 10px; /* <- espaçamento entre os cards */
+  margin: 10px;  /* Espaçamento entre os cards */
 }
 
-/* Ajuste para o espaço de 20px no topo dos gráficos */
-.card-body dcc-graph {
-  margin-top: 20px; /* Adiciona o espaçamento no topo de cada gráfico */
-}
-
-/* ---------- Barra lateral fixa (Exemplo de sidebar) ---------- */
-.fixed-radio-items {
-  position: fixed;    /* Fixa o RadioItems na tela */
-  top: 20px;          /* Coloca o componente no topo da tela */
-  bottom: 20px;       /* Distância da parte inferior */
-  left: 20px;         /* Distância da esquerda */
-  width: 200px;       /* Ajuste a largura conforme necessário (equivalente ao sm=2) */
-  height: 96vh;       /* A altura do card será igual à altura da tela */
-  padding: 20px;      /* Ajuste o preenchimento dentro do RadioItems */
-  margin: 0;          /* Remove margem externa */
-  background-color: #ffffff; /* Cor de fundo do RadioItems */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar o componente */
-}
-
-/* Desktop (padrão): sidebar lateral */
-#sidebar {
-  display: block;
-  position: fixed;
-}
-
-/* Celular: remover a barra lateral completamente e fazer os gráficos ocuparem toda a tela */
-@media screen and (max-width: 768px) {
-  /* Remove o card completo com RadioItems */
-  #sidebar {
-      display: none; /* Barra lateral removida */
-  }
-
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  /* Barra lateral (radio e checklist) em dispositivos móveis */
   .fixed-radio-items {
-      display: none; /* Esconde o conteúdo do card, incluindo o RadioItems */
+    width: 100%;  /* Barra lateral ocupa toda a largura da tela */
+    position: relative;  /* Barra lateral não será fixa em dispositivos móveis */
+    margin-bottom: 10px;  /* Adiciona um espaçamento abaixo */
   }
 
-  /* Ajusta o conteúdo para ocupar 100% da largura da tela */
-  #dynamic-content {
-      margin-top: 0;  /* Remove o espaço superior para os gráficos */
-      width: 100%;    /* Faz os gráficos ocuparem toda a largura disponível */
-      height: 100vh;  /* Ajusta a altura para ocupar a tela inteira */
+  /* Centralizando imagens na barra lateral */
+  .fixed-radio-items img {
+    display: block;  /* Faz a imagem ser um bloco */
+    margin-left: auto;  /* Aplica margem automática à esquerda */
+    margin-right: auto;  /* Aplica margem automática à direita */
+    width: 80%;  /* Ajusta a largura da imagem */
+    margin-bottom: 10px;  /* Adiciona espaçamento abaixo das imagens */
   }
 
-  /* Faz com que os gráficos ocupem a tela inteira */
-  .dcc-graph {
-    width: 100%; /* Gráficos ocupam 100% da largura */
-    height: 100%; /* Gráficos ocupam toda a altura do contêiner */
+  /* Área dos gráficos */
+  #dynamic-content-container-right {
+    width: 100%;  /* Gráficos ocuparão toda a largura da tela */
+    margin-left: 0;  /* Remove a margem esquerda */
+    text-align: center;  /* Centraliza os gráficos */
+  }
+
+  /* Centralizando os cards dos gráficos na tela */
+  .card {
+    width: 100%;  /* Ajusta a largura dos cards para ocupar 90% da tela */
+    margin: 10px auto;  /* Centraliza os cards e mantém o espaçamento de 10px entre eles */
+  }
+
+  /* Centraliza os cards dentro do contêiner */
+  .container-fluid {
+    display: flex;
+    justify-content: center;  /* Centraliza os cards horizontalmente */
+    align-items: flex-start;  /* Alinha os cards no topo do contêiner */
+    flex-direction: column;  /* Organiza os itens em uma coluna */
+    padding: 10px;
   }
 }
 
-/* Telas maiores (como TVs ou monitores grandes) */
-@media screen and (min-width: 1200px) {
-  /* Para telas grandes, mantém a barra lateral visível */
-  #sidebar {
-      display: block; /* Barra lateral visível */
-  }
 
-  .fixed-radio-items {
-      display: block; /* Exibe o conteúdo do RadioItems */
-  }
 
-  /* Ajusta o conteúdo para não ocupar toda a largura da tela */
-  #dynamic-content {
-      width: calc(100% - 200px); /* O conteúdo ocupa o restante da largura da tela */
-      height: 100vh;  /* Ajusta a altura para ocupar a tela inteira */
-  }
-
-  /* Ajusta os gráficos para ocuparem o espaço restante */
-  .dcc-graph {
-    width: 100%; /* Gráficos ocupam toda a largura do conteúdo */
-    height: 100%; /* Gráficos ocupam toda a altura do contêiner */
-  }
-}

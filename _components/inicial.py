@@ -36,10 +36,10 @@ inicial_layout = dbc.Row([
             ),
             html.Hr(),
         ], className="fixed-radio-items"),
-    ], width=2),
+]),
 
     # Alterei o ID para "dynamic-content-container-right" para evitar duplicação
     dbc.Col([ 
         html.Div(id="dynamic-content-container-right")  # Alterei o ID aqui
-    ], width=10)
+    ])
 ])
