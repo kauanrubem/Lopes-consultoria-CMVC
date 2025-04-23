@@ -69,3 +69,27 @@ h1, h2, h3 {
     height: 100%; /* Gráficos ocupam toda a altura do contêiner */
   }
 }
+
+/* Telas maiores (como TVs ou monitores grandes) */
+@media screen and (min-width: 1200px) {
+  /* Para telas grandes, mantém a barra lateral visível */
+  #sidebar {
+      display: block; /* Barra lateral visível */
+  }
+
+  .fixed-radio-items {
+      display: block; /* Exibe o conteúdo do RadioItems */
+  }
+
+  /* Ajusta o conteúdo para não ocupar toda a largura da tela */
+  #dynamic-content {
+      width: calc(100% - 200px); /* O conteúdo ocupa o restante da largura da tela */
+      height: 100vh;  /* Ajusta a altura para ocupar a tela inteira */
+  }
+
+  /* Ajusta os gráficos para ocuparem o espaço restante */
+  .dcc-graph {
+    width: 100%; /* Gráficos ocupam toda a largura do conteúdo */
+    height: 100%; /* Gráficos ocupam toda a altura do contêiner */
+  }
+}
