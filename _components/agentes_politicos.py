@@ -1,98 +1,162 @@
-from dash import dcc, html
+from dash import dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
+import datetime
 
 def layout_agentes_politicos():
-    return dbc.Row([  
-        # Gráfico 1 (fig1_agentes)
-        dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig1_agentes')
-        ])), width=12),
-
-        # Gráfico 2 (fig0_agentes)
-        dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig0_agentes')
-        ])), width=12),
-
-        # Gráfico 3 (fig2_agentes)
-        dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig2_agentes')
-        ])), width=12),
-
-        # Gráfico 4 (fig3_agentes)
-        dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig3_agentes')
-        ])), width=12),
-
-        # Gráfico 5 (fig4_agentes)
-        dbc.Col(dbc.Card(dbc.CardBody([  
-            dcc.Graph(id='fig4_agentes')
-        ])), width=12),
+    return dbc.Row([
+        *[
+            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_agentes')])),
+                    id=f'col{i}_agentes', xs=12, md=6)
+            for i in range(10)
+        ]
     ])
 
 def registrar_callbacks_agentes(app):
     @app.callback(
-        [Output('fig0_agentes', 'figure'),
-         Output('fig1_agentes', 'figure'),
-         Output('fig2_agentes', 'figure'),
-         Output('fig3_agentes', 'figure'),
-         Output('fig4_agentes', 'figure')],
+        # 10 figuras + 10 estilos
+        [Output(f'fig{i}_agentes', 'figure') for i in range(10)] +
+        [Output(f'col{i}_agentes', 'style') for i in range(10)],
         Input('data-store', 'data')
     )
     def atualizar_graficos_agentes(data):
-        df = pd.DataFrame(data)
-        df = df.iloc[2:].reset_index(drop=True)
-        df.columns = [
-            'Regime', 'Qtd', 'Salário Base Total (R$)', 'Outros Vencimentos (R$)', 'H. Extras',
-            'Diárias', '1/3 de Férias', 'Total de Vencimentos (R$)', 'INSS', 'IRRF', 'Outros Descontos',
-            'Total de Descontos'
+        # prepara DataFrame
+        df_raw = pd.DataFrame(data)
+        registros = []
+
+        for i in range(len(df_raw)):
+            row = df_raw.iloc[i]
+            if isinstance(row[0], str) and "Período:" in row[0]:
+                periodo = row[1]
+                status = str(row[3]).strip().upper() if pd.notna(row[3]) else None
+                header_index = None
+                for offset in range(1, 6):  # Começar da linha seguinte
+                    if i + offset >= len(df_raw):
+                        break
+                    possible_header = df_raw.iloc[i + offset]
+                    if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
+                        header_index = i + offset
+                        break
+                
+                # Correção adicional: se não encontrou cabeçalho, tente na linha +2 (caso de janeiro)
+                if header_index is None and i + 2 < len(df_raw):
+                    possible_header = df_raw.iloc[i + 2]
+                    if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
+                        header_index = i + 2
+                        
+                if header_index is None:
+                    continue
+
+                j = header_index + 1
+                while j < len(df_raw):
+                    linha = df_raw.iloc[j]
+                    if pd.isna(linha[0]) or "Período:" in str(linha[0]):
+                        break
+                    registros.append({
+                        "Período": periodo,
+                        "Status": status,
+                        "Lotes": linha[0],
+                        "Qtd": linha[1],
+                        "Salário Base Total (R$)": linha[2],
+                        "Outros Vencimentos (R$)": linha[3],
+                        "1/3 de Férias": linha[4],
+                        "Média Valor Férias/H.Extras": linha[5],
+                        "Total de Vencimentos (R$)": linha[6],
+                        "INSS Padronal": linha[7],
+                        "Verbas Indenizatórias": linha[8],
+                        "Licença Prêmio": linha[9],
+                        "Abono Pecuniário + 1/3 do Abono": linha[10],
+                    })
+                    j += 1
+
+        df = pd.DataFrame(registros)
+        df['Lotes'] = df['Lotes'].astype(str).str.strip()
+        df = df[df['Lotes'] == 'Lote 02 - Ag. Políticos'].reset_index(drop=True)
+
+        df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
+
+        meses = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º'
         ]
-        df['Regime'] = df['Regime'].str.strip()
-        df = df[df['Regime'] == 'Agentes Políticos'].copy()
+        df = df[df['Mês'].isin(meses)]
+        dados_por_mes = df.set_index('Mês').reindex(meses)
 
-        current_period = None
-        df['Período'] = pd.NA
-        for index, row in df.iterrows():
-            if pd.notna(row['Regime']) and '2025' in str(row['Regime']):
-                current_period = row['Regime']
-            if current_period:
-                df.at[index, 'Período'] = current_period
+        # Preenchendo o mês de Janeiro com os dados da linha 3 (a linha abaixo dos dados de Efetivos)
+        janeiro_dados = df_raw.iloc[3]  # Pega os dados da linha 3 para Janeiro
+        dados_por_mes.at['Janeiro', 'Qtd'] = janeiro_dados[1]
+        dados_por_mes.at['Janeiro', 'Salário Base Total (R$)'] = janeiro_dados[2]
+        dados_por_mes.at['Janeiro', 'Outros Vencimentos (R$)'] = janeiro_dados[3]
+        dados_por_mes.at['Janeiro', '1/3 de Férias'] = janeiro_dados[4]
+        dados_por_mes.at['Janeiro', 'Média Valor Férias/H.Extras'] = janeiro_dados[5]
+        dados_por_mes.at['Janeiro', 'Total de Vencimentos (R$)'] = janeiro_dados[6]
+        dados_por_mes.at['Janeiro', 'INSS Padronal'] = janeiro_dados[7]
+        dados_por_mes.at['Janeiro', 'Verbas Indenizatórias'] = janeiro_dados[8]
+        dados_por_mes.at['Janeiro', 'Licença Prêmio'] = janeiro_dados[9]
+        dados_por_mes.at['Janeiro', 'Abono Pecuniário + 1/3 do Abono'] = janeiro_dados[10]
+        dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"  # Garantir que janeiro tenha o status "REALIZADO"
 
-        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
-                 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º Mês']
-        if len(df) == 13:
-            df['Mês'] = meses
+        opacities = [
+            1.0 if str(dados_por_mes.at[m, 'Status']).strip().upper() == 'REALIZADO' else 0.5
+            for m in meses
+        ]
 
-        # fig0 - Quantidade
-        fig0 = go.Figure()
-        fig0.add_trace(go.Bar(x=df['Mês'], y=df['Qtd'], name='Qtd', marker=dict(color='blue')))
-        fig0.update_layout(title='Quantidade por Mês', xaxis_title='Meses', yaxis_title='Quantidade')
+        def get_col_data(col):
+            return [dados_por_mes[col].get(m, 0) for m in meses]
 
-        # fig1 - Total de Vencimentos
-        fig1 = go.Figure()
-        fig1.add_trace(go.Bar(x=df['Mês'], y=df['Total de Vencimentos (R$)'], name='Total de Vencimentos', marker=dict(color='orange')))
-        fig1.update_layout(title='Total de Vencimentos por Mês', xaxis_title='Meses', yaxis_title='Valores (R$)')
+        def fmt(v):
+            v = 0 if pd.isna(v) else v
+            return f"R$ {v:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
-        # fig2 - Composição dos Vencimentos
-        fig2 = go.Figure()
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['Outros Vencimentos (R$)'], name='Outros Vencimentos', marker=dict(color='green')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['H. Extras'], name='H. Extras', marker=dict(color='red')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['Diárias'], name='Diárias', marker=dict(color='blue')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['1/3 de Férias'], name='1/3 de Férias', marker=dict(color='purple')))
-        fig2.update_layout(title='Comparação de Vencimentos por Mês', xaxis_title='Meses', yaxis_title='Valores (R$)')
+        def make_fig(title, col, color, est_color, is_currency):
+            vals = get_col_data(col)
+            texts = [fmt(v) if is_currency else str(int(v)) if pd.notna(v) else '0' for v in vals]
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=meses,
+                x=vals,
+                marker=dict(color=color, opacity=opacities),
+                text=texts,
+                textposition='auto',
+                orientation='h',
+                showlegend=False
+            ))
+            fig.add_trace(go.Bar(x=[None], y=[None], name='Realizado',
+                                 marker=dict(color=color, opacity=1.0), showlegend=True))
+            fig.add_trace(go.Bar(x=[None], y=[None], name='Estimado',
+                                 marker=dict(color=est_color, opacity=0.5), showlegend=True))
+            fig.update_layout(
+                title=title,
+                yaxis_title='Meses',
+                xaxis_title='Valor (R$)' if is_currency else 'Quantidade',
+                yaxis=dict(autorange='reversed'),
+                xaxis=dict(tickvals=[]),
+                legend=dict(title='Legenda', orientation='v', x=1.02, y=1),
+                margin=dict(r=150)
+            )
+            return fig
 
-        # fig3 - Total de Descontos
-        fig3 = go.Figure()
-        fig3.add_trace(go.Bar(x=df['Mês'], y=df['Total de Descontos'], name='Total de Descontos', marker=dict(color='pink')))
-        fig3.update_layout(title='Total de Descontos por Mês', xaxis_title='Meses', yaxis_title='Descontos (R$)')
+        specs = [
+            ('Salário Base Total por Mês',    'Salário Base Total (R$)',    'blue',    'lightblue', True),
+            ('Quantidade de Agentes Políticos por Mês', 'Qtd',                   'orange',  '#FFCC80',    False),
+            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)', 'green',   'lightgreen', True),
+            ('Outros Vencimentos',             'Outros Vencimentos (R$)',   'red',     'lightcoral', True),
+            ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender',   True),
+            ('1/3 de Férias',                  '1/3 de Férias',             'cyan',    'lightcyan',  True),
+            ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
+            ('Licença Prêmio',                 'Licença Prêmio',            'gray',    'lightgray',  True),
+            ('INSS',                           'INSS Padronal',             'green',   'lightgreen', True),
+            ('Verbas Indenizatórias',          'Verbas Indenizatórias',     'purple',  'lavender',   True),
+        ]
 
-        # fig4 - Composição dos Descontos
-        fig4 = go.Figure()
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['INSS'], name='INSS', marker=dict(color='cyan')))
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['IRRF'], name='IRRF', marker=dict(color='yellow')))
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['Outros Descontos'], name='Outros Descontos', marker=dict(color='gray')))
-        fig4.update_layout(title='Descontos (INSS, IRRF, Outros) por Mês', xaxis_title='Meses', yaxis_title='Descontos (R$)')
+        figs = [make_fig(*s) for s in specs]
 
-        return fig0, fig1, fig2, fig3, fig4
+        # estilos: esconde coluna inteira se todos os valores forem zero/NaN
+        styles = []
+        for _, col, *_ in specs:
+            vals = df[col].fillna(0) if col in df else pd.Series([0]*len(meses))
+            styles.append({'display': 'none'} if (vals == 0).all() else {})
+
+        return figs + styles

@@ -1,84 +1,119 @@
-from dash import dcc, html
+from dash import dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
+import datetime
 
 def layout_total():
     return dbc.Row([
-        dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig1_total')
-        ])), xs=12, md=12),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig0_total')
-        ])), xs=12, md=12),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig2_total')
-        ])), xs=12, md=12),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig3_total')
-        ])), xs=12, md=12),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            dcc.Graph(id='fig4_total')
-        ])), xs=12, md=12),
+        *[
+            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_total')])),
+                    id=f'col{i}_total', xs=12, md=6)
+            for i in range(10)
+        ]
     ])
 
 def registrar_callbacks_total(app):
     @app.callback(
-        [Output('fig0_total', 'figure'),
-         Output('fig1_total', 'figure'),
-         Output('fig2_total', 'figure'),
-         Output('fig3_total', 'figure'),
-         Output('fig4_total', 'figure')],
+        [Output(f'fig{i}_total', 'figure') for i in range(10)] +
+        [Output(f'col{i}_total', 'style') for i in range(10)],
         Input('data-store', 'data')
     )
     def atualizar_graficos_total(data):
-        # Limpa e prepara os dados
-        df = pd.DataFrame(data)
-        df = df.iloc[2:208].reset_index(drop=True)  # Corte explícito até a linha 216
+        # lê e formata o DataFrame
+        df = pd.DataFrame(data).iloc[2:].reset_index(drop=True).iloc[:, :11]
         df.columns = [
-            'Regime', 'Qtd', 'Salário Base Total (R$)', 'Outros Vencimentos (R$)', 'H. Extras',
-            'Diárias', '1/3 de Férias', 'Total de Vencimentos (R$)', 'INSS', 'IRRF',
-            'Outros Descontos', 'Total de Descontos'
+            'Lotes', 'Qtd', 'Salário Base Total (R$)', 'Outros Vencimentos (R$)',
+            '1/3 de Férias', 'Média Valor Férias/H.Extras', 'Total de Vencimentos (R$)',
+            'INSS Padronal', 'Verbas Indenizatórias', 'Licença Prêmio',
+            'Abono Pecuniário + 1/3 do Abono'
         ]
-        df['Regime'] = df['Regime'].str.strip()
+        df['Lotes'] = df['Lotes'].str.strip()
 
-        # Filtra o regime Total
-        df = df[df['Regime'] == 'Total'].copy()
+        # captura o período corrente em cada linha
+        current = None
+        periods = []
+        for _, row in df.iterrows():
+            if pd.notna(row['Lotes']) and '2025' in row['Lotes']:
+                current = row['Lotes']
+            periods.append(current)
+        df['Período'] = periods
 
-        # Atribui os meses conforme o número de linhas válidas
-        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
-                 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º Mês']
-        df['Mês'] = meses[:len(df)]
+        # filtra apenas a linha “Total” (uma por mês)
+        df = df[df['Lotes'] == 'Total'].reset_index(drop=True)
 
-        # Gráfico 1: Quantidade
-        fig0 = go.Figure()
-        fig0.add_trace(go.Bar(x=df['Mês'], y=df['Qtd'], name='Qtd', marker=dict(color='blue')))
-        fig0.update_layout(title='Quantidade por Mês', xaxis_title='Meses', yaxis_title='Quantidade')
+        meses = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro',
+            'Dezembro', '13º Mês'
+        ]
+        month_idx = {m: i+1 for i, m in enumerate(meses[:-1])}
 
-        # Gráfico 2: Total de Vencimentos
-        fig1 = go.Figure()
-        fig1.add_trace(go.Bar(x=df['Mês'], y=df['Total de Vencimentos (R$)'], name='Total de Vencimentos', marker=dict(color='orange')))
-        fig1.update_layout(title='Total de Vencimentos por Mês', xaxis_title='Meses', yaxis_title='Valores (R$)')
+        # determina o mês “atual” para opacidades
+        periodo = df['Período'].iloc[0] if not df.empty else None
+        if isinstance(periodo, str) and '/' in periodo:
+            mes_str, _ = periodo.split('/')
+            mes_atual = month_idx.get(mes_str, datetime.datetime.now().month)
+        else:
+            mes_atual = datetime.datetime.now().month
 
-        # Gráfico 3: Composição dos Vencimentos
-        fig2 = go.Figure()
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['Outros Vencimentos (R$)'], name='Outros Vencimentos', marker=dict(color='green')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['H. Extras'], name='H. Extras', marker=dict(color='red')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['Diárias'], name='Diárias', marker=dict(color='blue')))
-        fig2.add_trace(go.Bar(x=df['Mês'], y=df['1/3 de Férias'], name='1/3 de Férias', marker=dict(color='purple')))
-        fig2.update_layout(title='Comparação de Vencimentos por Mês', xaxis_title='Meses', yaxis_title='Valores (R$)')
+        opacities = [
+            1.0 if (month_idx.get(m, 0) <= mes_atual and m != '13º Mês') else 0.5
+            for m in meses
+        ]
 
-        # Gráfico 4: Total de Descontos
-        fig3 = go.Figure()
-        fig3.add_trace(go.Bar(x=df['Mês'], y=df['Total de Descontos'], name='Total de Descontos', marker=dict(color='pink')))
-        fig3.update_layout(title='Total de Descontos por Mês', xaxis_title='Meses', yaxis_title='Descontos (R$)')
+        # Obtendo os dados de Janeiro da linha 8
+        janeiro_dados = df.iloc[8]  # Pega os dados da linha 8 para Janeiro
+        df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
 
-        # Gráfico 5: Composição dos Descontos
-        fig4 = go.Figure()
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['INSS'], name='INSS', marker=dict(color='cyan')))
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['IRRF'], name='IRRF', marker=dict(color='yellow')))
-        fig4.add_trace(go.Bar(x=df['Mês'], y=df['Outros Descontos'], name='Outros Descontos', marker=dict(color='gray')))
-        fig4.update_layout(title='Descontos (INSS, IRRF, Outros) por Mês', xaxis_title='Meses', yaxis_title='Descontos (R$)')
+        def fmt(v):
+            v = 0 if pd.isna(v) else v
+            return f"R$ {v:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
-        return fig0, fig1, fig2, fig3, fig4
+        def make_fig(title, col, color, est_color, is_currency):
+            vals = df[col]
+            texts = vals.apply(fmt) if is_currency else vals.fillna(0).astype(int).apply(str)
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=meses, x=vals,
+                marker=dict(color=color, opacity=opacities),
+                text=texts, textposition='auto',
+                orientation='h', showlegend=False
+            ))
+            fig.add_trace(go.Bar(x=[None], y=[None], name='Realizado',
+                                 marker=dict(color=color, opacity=1.0), showlegend=True))
+            fig.add_trace(go.Bar(x=[None], y=[None], name='Estimado',
+                                 marker=dict(color=est_color, opacity=0.5), showlegend=True))
+            fig.update_layout(
+                title=title,
+                yaxis_title='Meses',
+                xaxis_title='Valor (R$)' if is_currency else 'Quantidade',
+                yaxis=dict(autorange='reversed'),
+                xaxis=dict(tickvals=[]),
+                legend=dict(title='Legenda', orientation='v', x=1.02, y=1),
+                margin=dict(r=150)
+            )
+            return fig
+
+        specs = [
+            ('Salário Base Total por Mês',    'Salário Base Total (R$)',   'blue',    'lightblue', True),
+            ('Quantidade Total por Mês',       'Qtd',                        'orange',  '#FFCC80',    False),
+            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)',  'green',   'lightgreen', True),
+            ('Outros Vencimentos',             'Outros Vencimentos (R$)',    'red',     'lightcoral', True),
+            ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender',   True),
+            ('1/3 de Férias',                  '1/3 de Férias',              'cyan',    'lightcyan',  True),
+            ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
+            ('Licença Prêmio',                 'Licença Prêmio',             'gray',    'lightgray',  True),
+            ('INSS',                           'INSS Padronal',              'green',   'lightgreen', True),
+            ('Verbas Indenizatórias',          'Verbas Indenizatórias',      'purple',  'lavender',   True),
+        ]
+
+        figs = [make_fig(*s) for s in specs]
+        styles = [
+            {'display': 'none'} if (df[col].fillna(0) == 0).all() else {}
+            for _, col, *_ in specs
+        ]
+
+        # retorna 10 figures + 10 styles
+        return figs + styles

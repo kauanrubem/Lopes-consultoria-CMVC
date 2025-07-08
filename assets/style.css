@@ -12,9 +12,16 @@ body {
   left: 0;
   bottom: 0;
   padding: 10px;
-  background-color: #f8f9fa;  /* Cor de fundo suave */
-  border-right: 2px solid #dee2e6; /* Linha de separação */
+  overflow-y: auto;  /* Permite rolagem vertical se o conteúdo exceder a altura da tela */
 }
+
+.fixed-radio-items img {
+  width: 93%;  /* Imagens ocuparão toda a largura da barra lateral */
+  display: block;  /* Faz a imagem ser um bloco */
+    margin-left: auto;  /* Aplica margem automática à esquerda */
+    margin-right: auto;  /* Aplica margem automática à direita */
+}
+
 #apuracao-container {
   width: 86%;  /* A área dos gráficos ocupará os 86% restantes */
   margin-left: 14%;  /* Desloca os gráficos para a direita, ocupando 86% da tela */
@@ -29,7 +36,6 @@ body {
 .card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  background-color: white;
   margin: 10px;  /* Espaçamento entre os cards */
 }
 

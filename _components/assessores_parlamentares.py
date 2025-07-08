@@ -5,27 +5,28 @@ import pandas as pd
 import plotly.graph_objects as go
 import datetime
 
-def layout_estagiarios():
+def layout_assessores_parlamentares():
     return dbc.Row([
         *[
-            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_estagiarios')])),
-                    id=f'col{i}_estagiarios', xs=12, md=6)
+            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_assessores_parlamentares')])),
+                    id=f'col{i}_assessores_parlamentares', xs=12, md=6)
             for i in range(10)
         ]
     ])
 
-def registrar_callbacks_estagiarios(app):
+def registrar_callbacks_assessores_parlamentares(app):
     @app.callback(
-        [Output(f'fig{i}_estagiarios', 'figure') for i in range(10)] +
-        [Output(f'col{i}_estagiarios', 'style') for i in range(10)],
+        [Output(f'fig{i}_assessores_parlamentares', 'figure') for i in range(10)] +
+        [Output(f'col{i}_assessores_parlamentares', 'style') for i in range(10)],
         Input('data-store', 'data')
     )
-    def atualizar_graficos_estagiarios(data):
+    def atualizar_graficos_assessores_parlamentares(data):
+        # monta DataFrame e renomeia colunas
         df_raw = pd.DataFrame(data)
         registros = []
 
-        # Identificar os dados de janeiro diretamente na linha 7 (linha correta para estagiários)
-        janeiro_dados = df_raw.iloc[7]  # Pega os dados da linha 7 para Janeiro
+        # Identificar os dados de janeiro diretamente na linha 6 (linha correta para assessores parlamentares)
+        janeiro_dados = df_raw.iloc[5]  # Agora coleta da linha 5
         periodo = janeiro_dados[1]
         status = "REALIZADO"  # Garantir que Janeiro tenha o status "REALIZADO"
 
@@ -33,7 +34,7 @@ def registrar_callbacks_estagiarios(app):
         registros.append({
             "Período": periodo,
             "Status": status,
-            "Lotes": "Lote 11 - Estagiários",  # Usando o Lote 11
+            "Lotes": "Lote 05 - Assessores Parlamentares",  # Usando o Lote 05
             "Qtd": janeiro_dados[1],  # A quantidade
             "Salário Base Total (R$)": janeiro_dados[2],  # Salário Base Total
             "Outros Vencimentos (R$)": janeiro_dados[3],
@@ -48,7 +49,7 @@ def registrar_callbacks_estagiarios(app):
 
         for i in range(len(df_raw)):
             row = df_raw.iloc[i]
-            if isinstance(row[0], str) and "Período:" in row[0] and i != 7:  # Ignorar linha 7, pois já tratamos ela
+            if isinstance(row[0], str) and "Período:" in row[0] and i != 6:  # Ignorar linha 6, pois já tratamos ela
                 periodo = row[1]
                 status = str(row[3]).strip().upper() if pd.notna(row[3]) else None
                 header_index = None
@@ -93,18 +94,18 @@ def registrar_callbacks_estagiarios(app):
 
         df = pd.DataFrame(registros)
         df['Lotes'] = df['Lotes'].astype(str).str.strip()
-        df = df[df['Lotes'] == 'Lote 11 - Estagiários'].reset_index(drop=True)
+        df = df[df['Lotes'] == 'Lote 05 - Assessores Parlamentares'].reset_index(drop=True)
 
         df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
 
         meses = [
             'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º Mês'
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º'
         ]
         df = df[df['Mês'].isin(meses)]
         dados_por_mes = df.set_index('Mês').reindex(meses)
 
-        # Preenchendo o mês de Janeiro com os dados da linha 7 e garantindo o status "REALIZADO"
+        # Preenchendo o mês de Janeiro com os dados da linha 5 e garantindo o status "REALIZADO"
         dados_por_mes.at['Janeiro', 'Qtd'] = janeiro_dados[1]
         dados_por_mes.at['Janeiro', 'Salário Base Total (R$)'] = janeiro_dados[2]
         dados_por_mes.at['Janeiro', 'Outros Vencimentos (R$)'] = janeiro_dados[3]
@@ -159,7 +160,7 @@ def registrar_callbacks_estagiarios(app):
 
         specs = [
             ('Salário Base Total por Mês',    'Salário Base Total (R$)',   'blue',    'lightblue', True),
-            ('Quantidade de Estagiários por Mês', 'Qtd',                   'orange',  '#FFCC80', False),
+            ('Quantidade de Assessores por Mês', 'Qtd',                   'orange',  '#FFCC80', False),
             ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)', 'green',   'lightgreen', True),
             ('Outros Vencimentos',             'Outros Vencimentos (R$)',   'red',     'lightcoral', True),
             ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender', True),
