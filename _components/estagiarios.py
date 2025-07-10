@@ -16,7 +16,8 @@ def layout_estagiarios():
                             style={
                                 "width": "100%",
                                 "maxWidth": "100%",
-                                "height": "2000px"
+                                "height": "2000px",
+                                "width": "100%"
                             }
                         )
                     ]),
@@ -65,7 +66,8 @@ def registrar_callbacks_estagiarios(app):
                 status = str(row[3]).strip().upper() if pd.notna(row[3]) else None
                 header_index = None
                 for offset in range(1, 6):
-                    if i + offset >= len(df_raw): break
+                    if i + offset >= len(df_raw):
+                        break
                     possible_header = df_raw.iloc[i + offset]
                     if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
                         header_index = i + offset
@@ -105,13 +107,23 @@ def registrar_callbacks_estagiarios(app):
 
         df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
 
-        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º Mês']
+        meses = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º'
+        ]
         df = df[df['Mês'].isin(meses)]
         dados_por_mes = df.set_index('Mês').reindex(meses)
 
-        for campo in dados_por_mes.columns:
-            dados_por_mes.at['Janeiro', campo] = janeiro_dados[df.columns.get_loc(campo)]
+        dados_por_mes.at['Janeiro', 'Qtd'] = janeiro_dados[1]
+        dados_por_mes.at['Janeiro', 'Salário Base Total (R$)'] = janeiro_dados[2]
+        dados_por_mes.at['Janeiro', 'Outros Vencimentos (R$)'] = janeiro_dados[3]
+        dados_por_mes.at['Janeiro', '1/3 de Férias'] = janeiro_dados[4]
+        dados_por_mes.at['Janeiro', 'Média Valor Férias/H.Extras'] = janeiro_dados[5]
+        dados_por_mes.at['Janeiro', 'Total de Vencimentos (R$)'] = janeiro_dados[6]
+        dados_por_mes.at['Janeiro', 'INSS Padronal'] = janeiro_dados[7]
+        dados_por_mes.at['Janeiro', 'Verbas Indenizatórias'] = janeiro_dados[8]
+        dados_por_mes.at['Janeiro', 'Licença Prêmio'] = janeiro_dados[9]
+        dados_por_mes.at['Janeiro', 'Abono Pecuniário + 1/3 do Abono'] = janeiro_dados[10]
         dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"
 
         opacities = [
@@ -154,23 +166,26 @@ def registrar_callbacks_estagiarios(app):
             return fig
 
         specs = [
-            ('Salário Base Total por Mês', 'Salário Base Total (R$)', 'blue', 'lightblue', True),
-            ('Quantidade de Estagiários por Mês', 'Qtd', 'orange', '#FFCC80', False),
-            ('Total de Vencimentos por Mês', 'Total de Vencimentos (R$)', 'green', 'lightgreen', True),
-            ('Outros Vencimentos', 'Outros Vencimentos (R$)', 'red', 'lightcoral', True),
-            ('Férias/H.Extras', 'Média Valor Férias/H.Extras', 'purple', 'lavender', True),
-            ('1/3 de Férias', '1/3 de Férias', 'cyan', 'lightcyan', True),
-            ('Abono Pecuniário + 1/3 do Abono', 'Abono Pecuniário + 1/3 do Abono', 'yellow', 'lightyellow', True),
-            ('Licença Prêmio', 'Licença Prêmio', 'gray', 'lightgray', True),
-            ('INSS', 'INSS Padronal', 'green', 'lightgreen', True),
-            ('Verbas Indenizatórias', 'Verbas Indenizatórias', 'purple', 'lavender', True),
+            ('Salário Base Total por Mês',    'Salário Base Total (R$)',    'blue',    'lightblue', True),
+            ('Quantidade de Estagiários por Mês','Qtd',                     'orange',  '#FFCC80',    False),
+            ('Total de Vencimentos por Mês',  'Total de Vencimentos (R$)',  'green',   'lightgreen', True),
+            ('Outros Vencimentos',            'Outros Vencimentos (R$)',    'red',     'lightcoral', True),
+            ('Férias/H.Extras',               'Média Valor Férias/H.Extras','purple',  'lavender',   True),
+            ('1/3 de Férias',                 '1/3 de Férias',              'cyan',    'lightcyan',  True),
+            ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
+            ('Licença Prêmio',                'Licença Prêmio',             'gray',    'lightgray',  True),
+            ('INSS',                          'INSS Padronal',              'green',   'lightgreen', True),
+            ('Verbas Indenizatórias',         'Verbas Indenizatórias',      'purple',  'lavender',   True),
         ]
 
         figs = [make_fig(*s) for s in specs]
 
-        styles = [
-            {'display': 'none'} if (df[col].fillna(0) == 0).all() else {}
-            for _, col, *_ in specs
-        ]
+        styles = []
+        for _, col, *_ in specs:
+            vals = df[col].fillna(0)
+            styles.append({'display': 'none'} if (vals == 0).all() else {})
+
+        print("\n\n📌 DEBUG - DADOS ESTAGIÁRIOS LOTE 11:")
+        print(df[['Mês', 'Período', 'Lotes', 'Qtd', 'Salário Base Total (R$)', 'Status']])
 
         return figs + styles
