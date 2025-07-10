@@ -3,13 +3,28 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
-import datetime
 
 def layout_comissionados():
     return dbc.Row([
         *[
-            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_comissionados')])),
-                    id=f'col{i}_comissionados', xs=12, md=6)
+            dbc.Col(
+                dbc.Card(
+                    dbc.CardBody([
+                        dcc.Graph(
+                            id=f'fig{i}_comissionados',
+                            className="grafico-efetivo",
+                            style={
+                                "width": "100%",
+                                "maxWidth": "100%",
+                                "height": "2000px",
+                                "width": "100%"
+                            }
+                        )
+                    ]),
+                    className="grafico-efetivo-card"
+                ),
+                id=f'col{i}_comissionados', xs=12, md=6
+            )
             for i in range(10)
         ]
     ])
@@ -24,18 +39,16 @@ def registrar_callbacks_comissionados(app):
         df_raw = pd.DataFrame(data)
         registros = []
 
-        # Identificar os dados de janeiro diretamente na linha 6 (linha correta para comissionados)
-        janeiro_dados = df_raw.iloc[6]  # Pega os dados da linha 6 para Janeiro
+        janeiro_dados = df_raw.iloc[6]
         periodo = janeiro_dados[1]
-        status = "REALIZADO"  # Garantir que Janeiro tenha o status "REALIZADO"
+        status = "REALIZADO"
 
-        # Colocar os dados de janeiro diretamente
         registros.append({
             "Período": periodo,
             "Status": status,
-            "Lotes": "Lote 06 - Comissionados",  # Usando o Lote 06
-            "Qtd": janeiro_dados[1],  # A quantidade
-            "Salário Base Total (R$)": janeiro_dados[2],  # Salário Base Total
+            "Lotes": "Lote 06 - Comissionados",
+            "Qtd": janeiro_dados[1],
+            "Salário Base Total (R$)": janeiro_dados[2],
             "Outros Vencimentos (R$)": janeiro_dados[3],
             "1/3 de Férias": janeiro_dados[4],
             "Média Valor Férias/H.Extras": janeiro_dados[5],
@@ -48,24 +61,21 @@ def registrar_callbacks_comissionados(app):
 
         for i in range(len(df_raw)):
             row = df_raw.iloc[i]
-            if isinstance(row[0], str) and "Período:" in row[0] and i != 6:  # Ignorar linha 6, pois já tratamos ela
+            if isinstance(row[0], str) and "Período:" in row[0] and i != 6:
                 periodo = row[1]
                 status = str(row[3]).strip().upper() if pd.notna(row[3]) else None
                 header_index = None
-                for offset in range(1, 6):  # Começar da linha seguinte
+                for offset in range(1, 6):
                     if i + offset >= len(df_raw):
                         break
                     possible_header = df_raw.iloc[i + offset]
                     if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
                         header_index = i + offset
                         break
-                
-                # Correção adicional: se não encontrou cabeçalho, tente na linha +2 (caso de janeiro)
                 if header_index is None and i + 2 < len(df_raw):
                     possible_header = df_raw.iloc[i + 2]
                     if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
                         header_index = i + 2
-                        
                 if header_index is None:
                     continue
 
@@ -94,17 +104,13 @@ def registrar_callbacks_comissionados(app):
         df = pd.DataFrame(registros)
         df['Lotes'] = df['Lotes'].astype(str).str.strip()
         df = df[df['Lotes'] == 'Lote 06 - Comissionados'].reset_index(drop=True)
-
         df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
 
-        meses = [
-            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º Mês'
-        ]
+        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', '13º']
         df = df[df['Mês'].isin(meses)]
         dados_por_mes = df.set_index('Mês').reindex(meses)
 
-        # Preenchendo o mês de Janeiro com os dados da linha 6 e garantindo o status "REALIZADO"
         dados_por_mes.at['Janeiro', 'Qtd'] = janeiro_dados[1]
         dados_por_mes.at['Janeiro', 'Salário Base Total (R$)'] = janeiro_dados[2]
         dados_por_mes.at['Janeiro', 'Outros Vencimentos (R$)'] = janeiro_dados[3]
@@ -115,7 +121,7 @@ def registrar_callbacks_comissionados(app):
         dados_por_mes.at['Janeiro', 'Verbas Indenizatórias'] = janeiro_dados[8]
         dados_por_mes.at['Janeiro', 'Licença Prêmio'] = janeiro_dados[9]
         dados_por_mes.at['Janeiro', 'Abono Pecuniário + 1/3 do Abono'] = janeiro_dados[10]
-        dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"  # Garantir que janeiro tenha o status "REALIZADO"
+        dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"
 
         opacities = [
             1.0 if str(dados_por_mes.at[m, 'Status']).strip().upper() == 'REALIZADO' else 0.5
@@ -152,30 +158,24 @@ def registrar_callbacks_comissionados(app):
                 xaxis_title='Valor (R$)' if is_currency else 'Quantidade',
                 yaxis=dict(autorange='reversed'),
                 xaxis=dict(tickvals=[]),
-                legend=dict(title='Legenda', orientation='v', x=1.02, y=1),
-                margin=dict(r=150)
+                legend=dict(title='Legenda', orientation='v', x=1.02, y=1)
             )
             return fig
 
         specs = [
-            ('Salário Base Total por Mês',    'Salário Base Total (R$)',   'blue',    'lightblue', True),
-            ('Quantidade de Comissionados por Mês', 'Qtd',                   'orange',  '#FFCC80', False),
-            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)', 'green',   'lightgreen', True),
-            ('Outros Vencimentos',             'Outros Vencimentos (R$)',   'red',     'lightcoral', True),
-            ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender', True),
-            ('1/3 de Férias',                  '1/3 de Férias',             'cyan',    'lightcyan', True),
+            ('Salário Base Total por Mês',    'Salário Base Total (R$)',    'blue',    'lightblue', True),
+            ('Quantidade de Comissionados por Mês', 'Qtd',                  'orange',  '#FFCC80',   False),
+            ('Total de Vencimentos por Mês',  'Total de Vencimentos (R$)',  'green',   'lightgreen', True),
+            ('Outros Vencimentos',            'Outros Vencimentos (R$)',    'red',     'lightcoral', True),
+            ('Férias/H.Extras',               'Média Valor Férias/H.Extras','purple',  'lavender',   True),
+            ('1/3 de Férias',                 '1/3 de Férias',              'cyan',    'lightcyan',  True),
             ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
-            ('Licença Prêmio',                 'Licença Prêmio',            'gray',    'lightgray', True),
-            ('INSS',                           'INSS Padronal',             'green',   'lightgreen', True),
-            ('Verbas Indenizatórias',          'Verbas Indenizatórias',     'purple',  'lavender', True),
+            ('Licença Prêmio',                'Licença Prêmio',             'gray',    'lightgray',  True),
+            ('INSS',                          'INSS Padronal',              'green',   'lightgreen', True),
+            ('Verbas Indenizatórias',         'Verbas Indenizatórias',      'purple',  'lavender',   True),
         ]
 
         figs = [make_fig(*s) for s in specs]
-
-        # estilos: esconde coluna se todos valores são zero ou NaN
-        styles = [
-            {'display': 'none'} if (df[col].fillna(0) == 0).all() else {}
-            for _, col, *_ in specs
-        ]
+        styles = [{'display': 'none'} if (df[col].fillna(0) == 0).all() else {} for _, col, *_ in specs]
 
         return figs + styles

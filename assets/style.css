@@ -82,7 +82,7 @@ body {
   margin-bottom: 25px;
 }
 
-/* MENU HAMBÚRGUER E MOBILE */
+/* RESPONSIVO */
 @media (max-width: 768px) {
   #btn-toggle-menu {
     display: block;
@@ -131,7 +131,7 @@ body {
     height: auto !important;
     min-height: 550px !important;
     overflow: visible !important;
-    box-sizing: border-box; 
+    box-sizing: border-box;
   }
 
   .card-grafico {
@@ -165,13 +165,24 @@ body {
     margin: 10px auto;
   }
 
-  .grafico-efetivo-card {
+  /* GERAIS PARA TODOS OS GRUPOS */
+  .grafico-efetivo-card,
+  .grafico-comissionado-card,
+  .grafico-agente-card,
+  .grafico-aposentado-card,
+  .grafico-estagiario-card,
+  .grafico-total-card {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #ccc;
   }
 
-  .grafico-efetivo .js-plotly-plot {
+  .grafico-efetivo .js-plotly-plot,
+  .grafico-comissionado .js-plotly-plot,
+  .grafico-agente .js-plotly-plot,
+  .grafico-aposentado .js-plotly-plot,
+  .grafico-estagiario .js-plotly-plot,
+  .grafico-total .js-plotly-plot {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
@@ -180,26 +191,43 @@ body {
     overflow: hidden !important;
   }
 
-  .grafico-efetivo .legend {
+  .grafico-efetivo .legend,
+  .grafico-comissionado .legend,
+  .grafico-agente .legend,
+  .grafico-aposentado .legend,
+  .grafico-estagiario .legend,
+  .grafico-total .legend {
     position: relative !important;
     width: 100% !important;
     text-align: center !important;
   }
 
-  .grafico-efetivo .svg-container {
+  .grafico-efetivo .svg-container,
+  .grafico-comissionado .svg-container,
+  .grafico-agente .svg-container,
+  .grafico-aposentado .svg-container,
+  .grafico-estagiario .svg-container,
+  .grafico-total .svg-container {
     overflow: hidden !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
   }
 
-  .grafico-efetivo-card .card-body {
+  .grafico-efetivo-card .card-body,
+  .grafico-comissionado-card .card-body,
+  .grafico-agente-card .card-body,
+  .grafico-aposentado-card .card-body,
+  .grafico-estagiario-card .card-body,
+  .grafico-total-card .card-body {
     padding: 0 !important;
-    margin: 0 !important;
   }
 
-  .grafico-efetivo .js-plotly-plot .legend {
+  .grafico-efetivo .js-plotly-plot .legend,
+  .grafico-comissionado .js-plotly-plot .legend,
+  .grafico-agente .js-plotly-plot .legend,
+  .grafico-aposentado .js-plotly-plot .legend,
+  .grafico-estagiario .js-plotly-plot .legend,
+  .grafico-total .js-plotly-plot .legend {
     position: relative !important;
     max-width: 50% !important;
     width: 100% !important;
@@ -207,20 +235,39 @@ body {
     left: 0 !important;
     padding-right: 10px !important;
     box-sizing: border-box;
-    font-size: 10px !important;
   }
 
-  .grafico-efetivo .ytitle {
+  .grafico-efetivo .ytitle,
+  .grafico-comissionado .ytitle,
+  .grafico-agente .ytitle,
+  .grafico-aposentado .ytitle,
+  .grafico-estagiario .ytitle,
+  .grafico-total .ytitle {
     display: none !important;
   }
 
   .grafico-efetivo .js-plotly-plot .main-svg,
-  .grafico-efetivo .svg-container {
+  .grafico-comissionado .js-plotly-plot .main-svg,
+  .grafico-agente .js-plotly-plot .main-svg,
+  .grafico-aposentado .js-plotly-plot .main-svg,
+  .grafico-estagiario .js-plotly-plot .main-svg,
+  .grafico-total .js-plotly-plot .main-svg,
+  .grafico-efetivo .svg-container,
+  .grafico-comissionado .svg-container,
+  .grafico-agente .svg-container,
+  .grafico-aposentado .svg-container,
+  .grafico-estagiario .svg-container,
+  .grafico-total .svg-container {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
 
-  .grafico-efetivo .js-plotly-plot .yaxislayer-above {
+  .grafico-efetivo .js-plotly-plot .yaxislayer-above,
+  .grafico-comissionado .js-plotly-plot .yaxislayer-above,
+  .grafico-agente .js-plotly-plot .yaxislayer-above,
+  .grafico-aposentado .js-plotly-plot .yaxislayer-above,
+  .grafico-estagiario .js-plotly-plot .yaxislayer-above,
+  .grafico-total .js-plotly-plot .yaxislayer-above {
     transform: translateX(-10px) !important;
   }
 }

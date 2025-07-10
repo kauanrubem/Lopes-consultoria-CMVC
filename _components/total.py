@@ -8,8 +8,23 @@ import datetime
 def layout_total():
     return dbc.Row([
         *[
-            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_total')])),
-                    id=f'col{i}_total', xs=12, md=6)
+            dbc.Col(
+                dbc.Card(
+                    dbc.CardBody([
+                        dcc.Graph(
+                            id=f'fig{i}_total',
+                            className="grafico-total",
+                            style={
+                                "width": "100%",
+                                "maxWidth": "100%",
+                                "height": "2000px",
+                            }
+                        )
+                    ]),
+                    className="grafico-total-card"
+                ),
+                id=f'col{i}_total', xs=12, md=6
+            )
             for i in range(10)
         ]
     ])
@@ -21,7 +36,6 @@ def registrar_callbacks_total(app):
         Input('data-store', 'data')
     )
     def atualizar_graficos_total(data):
-        # lê e formata o DataFrame
         df = pd.DataFrame(data).iloc[2:].reset_index(drop=True).iloc[:, :11]
         df.columns = [
             'Lotes', 'Qtd', 'Salário Base Total (R$)', 'Outros Vencimentos (R$)',
@@ -31,7 +45,6 @@ def registrar_callbacks_total(app):
         ]
         df['Lotes'] = df['Lotes'].str.strip()
 
-        # captura o período corrente em cada linha
         current = None
         periods = []
         for _, row in df.iterrows():
@@ -40,7 +53,6 @@ def registrar_callbacks_total(app):
             periods.append(current)
         df['Período'] = periods
 
-        # filtra apenas a linha “Total” (uma por mês)
         df = df[df['Lotes'] == 'Total'].reset_index(drop=True)
 
         meses = [
@@ -50,7 +62,6 @@ def registrar_callbacks_total(app):
         ]
         month_idx = {m: i+1 for i, m in enumerate(meses[:-1])}
 
-        # determina o mês “atual” para opacidades
         periodo = df['Período'].iloc[0] if not df.empty else None
         if isinstance(periodo, str) and '/' in periodo:
             mes_str, _ = periodo.split('/')
@@ -63,8 +74,6 @@ def registrar_callbacks_total(app):
             for m in meses
         ]
 
-        # Obtendo os dados de Janeiro da linha 8
-        janeiro_dados = df.iloc[8]  # Pega os dados da linha 8 para Janeiro
         df['Mês'] = df['Período'].str.extract(r'([\wº]+)(?=/2025)')[0].str.strip().str.capitalize()
 
         def fmt(v):
@@ -76,10 +85,13 @@ def registrar_callbacks_total(app):
             texts = vals.apply(fmt) if is_currency else vals.fillna(0).astype(int).apply(str)
             fig = go.Figure()
             fig.add_trace(go.Bar(
-                y=meses, x=vals,
+                y=meses,
+                x=vals,
                 marker=dict(color=color, opacity=opacities),
-                text=texts, textposition='auto',
-                orientation='h', showlegend=False
+                text=texts,
+                textposition='auto',
+                orientation='h',
+                showlegend=False
             ))
             fig.add_trace(go.Bar(x=[None], y=[None], name='Realizado',
                                  marker=dict(color=color, opacity=1.0), showlegend=True))
@@ -98,9 +110,9 @@ def registrar_callbacks_total(app):
 
         specs = [
             ('Salário Base Total por Mês',    'Salário Base Total (R$)',   'blue',    'lightblue', True),
-            ('Quantidade Total por Mês',       'Qtd',                        'orange',  '#FFCC80',    False),
-            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)',  'green',   'lightgreen', True),
-            ('Outros Vencimentos',             'Outros Vencimentos (R$)',    'red',     'lightcoral', True),
+            ('Quantidade Total por Mês',       'Qtd',                       'orange',  '#FFCC80',    False),
+            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)', 'green',   'lightgreen', True),
+            ('Outros Vencimentos',             'Outros Vencimentos (R$)',   'red',     'lightcoral', True),
             ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender',   True),
             ('1/3 de Férias',                  '1/3 de Férias',              'cyan',    'lightcyan',  True),
             ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
@@ -115,5 +127,4 @@ def registrar_callbacks_total(app):
             for _, col, *_ in specs
         ]
 
-        # retorna 10 figures + 10 styles
         return figs + styles

@@ -8,21 +8,35 @@ import datetime
 def layout_agentes_politicos():
     return dbc.Row([
         *[
-            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_agentes')])),
-                    id=f'col{i}_agentes', xs=12, md=6)
+            dbc.Col(
+                dbc.Card(
+                    dbc.CardBody([
+                        dcc.Graph(
+                            id=f'fig{i}_agentes',
+                            className="grafico-agente",
+                            style={
+                                "width": "100%",
+                                "maxWidth": "100%",
+                                "height": "2000px",
+                                "width": "100%"
+                            }
+                        )
+                    ]),
+                    className="grafico-agente-card"
+                ),
+                id=f'col{i}_agentes', xs=12, md=6
+            )
             for i in range(10)
         ]
     ])
 
 def registrar_callbacks_agentes(app):
     @app.callback(
-        # 10 figuras + 10 estilos
         [Output(f'fig{i}_agentes', 'figure') for i in range(10)] +
         [Output(f'col{i}_agentes', 'style') for i in range(10)],
         Input('data-store', 'data')
     )
     def atualizar_graficos_agentes(data):
-        # prepara DataFrame
         df_raw = pd.DataFrame(data)
         registros = []
 
@@ -32,23 +46,19 @@ def registrar_callbacks_agentes(app):
                 periodo = row[1]
                 status = str(row[3]).strip().upper() if pd.notna(row[3]) else None
                 header_index = None
-                for offset in range(1, 6):  # Começar da linha seguinte
+                for offset in range(1, 6):
                     if i + offset >= len(df_raw):
                         break
                     possible_header = df_raw.iloc[i + offset]
                     if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
                         header_index = i + offset
                         break
-                
-                # Correção adicional: se não encontrou cabeçalho, tente na linha +2 (caso de janeiro)
                 if header_index is None and i + 2 < len(df_raw):
                     possible_header = df_raw.iloc[i + 2]
                     if any(isinstance(cell, str) and "Lotes" in str(cell) for cell in possible_header):
                         header_index = i + 2
-                        
                 if header_index is None:
                     continue
-
                 j = header_index + 1
                 while j < len(df_raw):
                     linha = df_raw.iloc[j]
@@ -84,8 +94,7 @@ def registrar_callbacks_agentes(app):
         df = df[df['Mês'].isin(meses)]
         dados_por_mes = df.set_index('Mês').reindex(meses)
 
-        # Preenchendo o mês de Janeiro com os dados da linha 3 (a linha abaixo dos dados de Efetivos)
-        janeiro_dados = df_raw.iloc[3]  # Pega os dados da linha 3 para Janeiro
+        janeiro_dados = df_raw.iloc[3]
         dados_por_mes.at['Janeiro', 'Qtd'] = janeiro_dados[1]
         dados_por_mes.at['Janeiro', 'Salário Base Total (R$)'] = janeiro_dados[2]
         dados_por_mes.at['Janeiro', 'Outros Vencimentos (R$)'] = janeiro_dados[3]
@@ -96,7 +105,7 @@ def registrar_callbacks_agentes(app):
         dados_por_mes.at['Janeiro', 'Verbas Indenizatórias'] = janeiro_dados[8]
         dados_por_mes.at['Janeiro', 'Licença Prêmio'] = janeiro_dados[9]
         dados_por_mes.at['Janeiro', 'Abono Pecuniário + 1/3 do Abono'] = janeiro_dados[10]
-        dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"  # Garantir que janeiro tenha o status "REALIZADO"
+        dados_por_mes.at['Janeiro', 'Status'] = "REALIZADO"
 
         opacities = [
             1.0 if str(dados_por_mes.at[m, 'Status']).strip().upper() == 'REALIZADO' else 0.5
@@ -140,20 +149,19 @@ def registrar_callbacks_agentes(app):
 
         specs = [
             ('Salário Base Total por Mês',    'Salário Base Total (R$)',    'blue',    'lightblue', True),
-            ('Quantidade de Agentes Políticos por Mês', 'Qtd',                   'orange',  '#FFCC80',    False),
-            ('Total de Vencimentos por Mês',   'Total de Vencimentos (R$)', 'green',   'lightgreen', True),
-            ('Outros Vencimentos',             'Outros Vencimentos (R$)',   'red',     'lightcoral', True),
-            ('Férias/H.Extras',                'Média Valor Férias/H.Extras','purple',  'lavender',   True),
-            ('1/3 de Férias',                  '1/3 de Férias',             'cyan',    'lightcyan',  True),
+            ('Quantidade de Agentes Políticos por Mês', 'Qtd',               'orange',  '#FFCC80',    False),
+            ('Total de Vencimentos por Mês',  'Total de Vencimentos (R$)',  'green',   'lightgreen', True),
+            ('Outros Vencimentos',            'Outros Vencimentos (R$)',    'red',     'lightcoral', True),
+            ('Férias/H.Extras',               'Média Valor Férias/H.Extras','purple',  'lavender',   True),
+            ('1/3 de Férias',                 '1/3 de Férias',              'cyan',    'lightcyan',  True),
             ('Abono Pecuniário + 1/3 do Abono','Abono Pecuniário + 1/3 do Abono','yellow','lightyellow',True),
-            ('Licença Prêmio',                 'Licença Prêmio',            'gray',    'lightgray',  True),
-            ('INSS',                           'INSS Padronal',             'green',   'lightgreen', True),
-            ('Verbas Indenizatórias',          'Verbas Indenizatórias',     'purple',  'lavender',   True),
+            ('Licença Prêmio',                'Licença Prêmio',             'gray',    'lightgray',  True),
+            ('INSS',                          'INSS Padronal',              'green',   'lightgreen', True),
+            ('Verbas Indenizatórias',         'Verbas Indenizatórias',      'purple',  'lavender',   True),
         ]
 
         figs = [make_fig(*s) for s in specs]
 
-        # estilos: esconde coluna inteira se todos os valores forem zero/NaN
         styles = []
         for _, col, *_ in specs:
             vals = df[col].fillna(0) if col in df else pd.Series([0]*len(meses))
