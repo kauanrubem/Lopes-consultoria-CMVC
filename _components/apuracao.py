@@ -140,46 +140,24 @@ def registrar_callbacks_apuracao(app):
 
         nomes_exibidos = [abreviar_lote(lote) for lote in totais["Lote"]]
 
-        user_agent = flask.request.headers.get("User-Agent", "")
-        is_mobile = "Mobile" in user_agent or "Android" in user_agent or "iPhone" in user_agent
-
         fig = go.Figure()
-        if is_mobile:
-            fig.add_trace(go.Bar(
-                x=totais["Total Somado (R$)"],
-                y=nomes_exibidos,
-                orientation='h',
-                marker_color='teal',
-                text=texto,
-                textposition='outside',
-                texttemplate='%{text}'
-            ))
-            fig.update_layout(
-                title="Totais por Lote (Mobile)",
-                xaxis_title="Valor (R$)",
-                yaxis_title="",
-                barmode='group',
-                height=600,
-                showlegend=False
-            )
-        else:
-            fig.add_trace(go.Bar(
-                x=nomes_exibidos,
-                y=totais["Total Somado (R$)"],
-                orientation='v',
-                marker_color='teal',
-                text=texto,
-                textposition='auto',
-                texttemplate='%{text}'
-            ))
-            fig.update_layout(
-                title="Totais de Cada Lote (Salário Base + Outros Vencimentos)",
-                xaxis_title="Lote",
-                yaxis_title="Valor (R$)",
-                barmode='group',
-                height=500,
-                showlegend=False
-            )
+        fig.add_trace(go.Bar(
+            x=nomes_exibidos,
+            y=totais["Total Somado (R$)"],
+            orientation='v',
+            marker_color='teal',
+            text=texto,
+            textposition='auto',
+            texttemplate='%{text}'
+        ))
+        fig.update_layout(
+            title="Totais de Cada Lote (Salário Base + Outros Vencimentos)",
+            xaxis_title="Lote",
+            yaxis_title="Valor (R$)",
+            barmode='group',
+            height=600,
+            showlegend=False
+        )
 
         totalizador_texto = html.Div(
             f"Total do Salário Base: {formatar_valor(total_salario)} / Total dos Outros Vencimentos: {formatar_valor(total_outros)}"
