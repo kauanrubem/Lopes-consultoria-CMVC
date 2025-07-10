@@ -16,7 +16,7 @@ def layout_efetivos():
                             style={
                                 "width": "100%",
                                 "maxWidth": "100%",
-                                "height": "100%",  # ✅ altura controlada
+                                "height": "2000px",  # ✅ altura controlada
                                 "width": "100%"  # ✅ largura controlada   
                             }
                         )

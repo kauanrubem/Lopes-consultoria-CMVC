@@ -130,16 +130,15 @@ body {
   .js-plotly-plot {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 auto !important;
+    margin: 10px auto 0 auto !important; /* 10px acima do gráfico */
     height: auto !important;
-    min-height: 300px;
+    min-height: 320px;
     overflow: visible !important;
     box-sizing: border-box;
   }
 
   .card-grafico {
     padding: 0 !important;
-    box-sizing: border-box;
     overflow: visible !important;
   }
 
@@ -203,10 +202,10 @@ body {
   } 
 
   .grafico-efetivo-card .card-body {
-  padding: 10px !important;
+    padding: 0 !important;
   }
 
-/* LEGENDA DENTRO DO CARD NO MOBILE */
+  /* LEGENDA DENTRO DO CARD NO MOBILE */
   .grafico-efetivo .js-plotly-plot .legend {
     position: relative !important;
     max-width: 100% !important;
@@ -217,8 +216,19 @@ body {
     box-sizing: border-box;
   }
 
-  .grafico-efetivo .ytitle{
+  .grafico-efetivo .ytitle {
     display: none !important;
   }
 
+  /* ✅ Remover espaço inferior desnecessário do gráfico */
+  .grafico-efetivo .js-plotly-plot .main-svg,
+  .grafico-efetivo .svg-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* ✅ Puxar os textos dos meses mais para esquerda */
+  .grafico-efetivo .js-plotly-plot .yaxislayer-above {
+    transform: translateX(-10px) !important;
+  }
 }
