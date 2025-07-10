@@ -84,7 +84,6 @@ body {
 
 /* MENU HAMBÚRGUER E MOBILE */
 @media (max-width: 768px) {
-  /* BOTÃO MENU */
   #btn-toggle-menu {
     display: block;
     margin: 10px;
@@ -117,7 +116,6 @@ body {
     margin-bottom: 10px;
   }
 
-  /* CONTEÚDO OCUPA 100% */
   #apuracao-container,
   #dynamic-content-container,
   #dynamic-content-container-right {
@@ -125,38 +123,32 @@ body {
     margin-left: 0;
   }
 
-  /* GRÁFICOS GERAIS */
-  /* GRÁFICOS GERAIS */
   .dash-graph,
   .js-plotly-plot {
     width: 100% !important;
     max-width: 100% !important;
     margin: 10px auto 0 auto !important;
     height: auto !important;
-    min-height: 550px !important;  /* ⬅️ AUMENTADO para caber todos os meses */
+    min-height: 550px !important;
     overflow: visible !important;
     box-sizing: border-box; 
   }
-
 
   .card-grafico {
     padding: 0 !important;
     overflow: visible !important;
   }
 
-  /* LEGENDAS REDUZIDAS */
   .js-plotly-plot .yaxislayer-above text {
     font-size: 10px !important;
   }
 
-  /* TOTALIZADOR CENTRALIZADO */
   #apuracao-totalizador {
     text-align: center !important;
     font-size: 0.9rem;
     margin-top: 15px;
   }
 
-  /* CARDS DE APURAÇÃO ABAIXO DO GRÁFICO */
   .apuracao-row {
     display: flex;
     flex-direction: column;
@@ -168,20 +160,17 @@ body {
     max-width: 100%;
   }
 
-  /* CARDS COMPACTADOS NO MOBILE */
   #apuracao-cards .card-resumo {
     width: 80%;
     margin: 10px auto;
   }
 
-  /* GRÁFICOS DE EFETIVOS AJUSTADOS NO MOBILE */
   .grafico-efetivo-card {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #ccc;
   }
 
-  /* 🔧 AJUSTES VISUAIS NO MOBILE (SEM SCROLL) */
   .grafico-efetivo .js-plotly-plot {
     width: 100% !important;
     max-width: 100% !important;
@@ -201,13 +190,15 @@ body {
     overflow: hidden !important;
     width: 100% !important;
     max-width: 100% !important;
-  } 
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
 
   .grafico-efetivo-card .card-body {
     padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* LEGENDA DENTRO DO CARD NO MOBILE */
   .grafico-efetivo .js-plotly-plot .legend {
     position: relative !important;
     max-width: 50% !important;
@@ -216,20 +207,19 @@ body {
     left: 0 !important;
     padding-right: 10px !important;
     box-sizing: border-box;
+    font-size: 10px !important;
   }
 
   .grafico-efetivo .ytitle {
     display: none !important;
   }
 
-  /* ✅ Remover espaço inferior desnecessário do gráfico */
   .grafico-efetivo .js-plotly-plot .main-svg,
   .grafico-efetivo .svg-container {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
 
-  /* ✅ Puxar os textos dos meses mais para esquerda */
   .grafico-efetivo .js-plotly-plot .yaxislayer-above {
     transform: translateX(-10px) !important;
   }
