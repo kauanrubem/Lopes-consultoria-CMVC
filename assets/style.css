@@ -83,7 +83,7 @@ body {
 }
 
 /* MENU HAMBÚRGUER E MOBILE */
-@media (max-width: 768px) {
+@media (max-width: 300px) {
   /* BOTÃO MENU */
   #btn-toggle-menu {
     display: block;
