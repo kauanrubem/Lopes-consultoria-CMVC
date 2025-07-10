@@ -1,6 +1,6 @@
-from dash import Dash, dcc, html 
+from dash import Dash, dcc, html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from _components.inicial import inicial_layout
 from _components.efetivos import layout_efetivos, registrar_callbacks_efetivos
 from _components.comissionados import layout_comissionados, registrar_callbacks_comissionados
@@ -15,20 +15,20 @@ from utils import carregar_dados_drive
 # Inicialização do Dash
 app = Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
 app.title = "Apuração de Dados CMVC"
-app._favicon = "assets/favicon.ico"  # Define o favicon do aplicativo
+app._favicon = "assets/favicon.ico"
 
 # Configuração do servidor
 server = app.server
 app.config.suppress_callback_exceptions = True
-    
+
 # Layout do aplicativo
 app.layout = dbc.Container([
     dcc.Interval(id='interval-update', interval=10 * 1000, n_intervals=0),
-    dcc.Store(id='data-store'),  # Armazena os dados atualizados da planilha
+    dcc.Store(id='data-store'),
 
-    # Conteúdo dinâmico (layouts por regime)
+    # Layout inicial (barra lateral e botão de menu)
     dbc.Row([
-        dbc.Col(inicial_layout),
+        dbc.Col(inicial_layout)
     ]),
 
     # Gráfico de apuração fixo
@@ -36,26 +36,25 @@ app.layout = dbc.Container([
         dbc.Col(html.Div(id='apuracao-container'), xs=12)
     ]),
 
-    # Checklist de apuração
+    # Checklist e gráficos
     dbc.Row([
         dbc.Col(html.Div(id='dynamic-content-container'), xs=12)
-    ]),
-
+    ])
 ], fluid=True)
 
-# Callback para atualizar o layout de apuração
+# Callback: atualiza layout de apuração
 @app.callback(
     Output('apuracao-container', 'children'),
-    [Input('apuracao_checklist', 'value')]
+    Input('apuracao_checklist', 'value')
 )
 def update_apuracao_layout(selected_values):
     if "Apuracao_CF_art_29_A" in selected_values:
         return layout_apuracao()
 
-# Callback para trocar o layout com base na seleção
+# Callback: troca layout com base na seleção
 @app.callback(
     Output('dynamic-content-container', 'children'),
-    [Input('main_variable', 'value')]
+    Input('main_variable', 'value')
 )
 def update_layout(selected_value):
     if selected_value is None:
@@ -65,7 +64,7 @@ def update_layout(selected_value):
 
     if selected_value == "Lote 01 - Efetivos":
         return html.Div([titulo, layout_efetivos()])
-    elif selected_value == "Lote 02 - Ag. Políticos":   
+    elif selected_value == "Lote 02 - Ag. Políticos":
         return html.Div([titulo, layout_agentes_politicos()])
     elif selected_value == "Lote 03 - Aposentados e Pensionistas":
         return html.Div([titulo, layout_aposentados()])
@@ -83,7 +82,7 @@ def update_layout(selected_value):
     else:
         return html.H3("Selecione uma opção válida.")
 
-# Callback que recarrega os dados da planilha periodicamente
+# Callback: recarrega dados periodicamente
 @app.callback(
     Output('data-store', 'data'),
     Input('interval-update', 'n_intervals')
@@ -92,7 +91,20 @@ def atualizar_dados(_):
     df = carregar_dados_drive()
     return df.to_dict('records')
 
-# Registro de todos os callbacks por regime
+# ✅ Callback: abrir/fechar menu no mobile
+@app.callback(
+    Output("side-menu", "style"),
+    Input("btn-toggle-menu", "n_clicks"),
+    State("side-menu", "style"),
+    prevent_initial_call=True
+)
+def toggle_menu(n_clicks, current_style):
+    if not current_style or current_style.get("display") == "none":
+        return {"display": "block"}
+    else:
+        return {"display": "none"}
+
+# Registro de callbacks
 registrar_callbacks_efetivos(app)
 registrar_callbacks_comissionados(app)
 registrar_callbacks_agentes(app)
@@ -102,6 +114,7 @@ registrar_callbacks_aposentados(app)
 registrar_callbacks_total(app)
 registrar_callbacks_apuracao(app)
 
-# Rodar localmente apenas se for executado diretamente
+# Execução local
 if __name__ == "__main__":
     app.run(debug=False, port=8050, host="0.0.0.0")
+    

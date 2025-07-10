@@ -2,83 +2,223 @@
 body {
   padding: 0;
   font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Barra lateral fixa */
+/* BARRA LATERAL (DESKTOP) */
 .fixed-radio-items {
-  width: 14%;  /* Define a largura da barra lateral como 14% */
+  width: 14%;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   padding: 10px;
-  overflow-y: auto;  /* Permite rolagem vertical se o conteúdo exceder a altura da tela */
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  z-index: 100;
 }
 
 .fixed-radio-items img {
-  width: 93%;  /* Imagens ocuparão toda a largura da barra lateral */
-  display: block;  /* Faz a imagem ser um bloco */
-    margin-left: auto;  /* Aplica margem automática à esquerda */
-    margin-right: auto;  /* Aplica margem automática à direita */
+  width: 93%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-#apuracao-container {
-  width: 86%;  /* A área dos gráficos ocupará os 86% restantes */
-  margin-left: 14%;  /* Desloca os gráficos para a direita, ocupando 86% da tela */
-}
-/* Configuração dos gráficos */
-#dynamic-content-container {
-  width: 86%;  /* A área dos gráficos ocupará os 86% restantes */
-  margin-left: 14%;  /* Desloca os gráficos para a direita, ocupando 86% da tela */
+/* CONTEÚDO PRINCIPAL */
+#apuracao-container,
+#dynamic-content-container,
+#dynamic-content-container-right {
+  width: 86%;
+  margin-left: 14%;
 }
 
-/* Cards de gráficos */
+/* CARDS */
 .card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  margin: 10px;  /* Espaçamento entre os cards */
+  margin: 10px;
+  overflow: hidden;
 }
 
-/* Ajustes responsivos */
+.card-body {
+  padding: 10px;
+}
+
+.card-resumo {
+  margin-bottom: 10px;
+}
+
+/* GRÁFICO */
+.dash-graph,
+.js-plotly-plot {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden !important;
+}
+
+.card-grafico {
+  overflow: visible;
+  padding: 0;
+  width: 100%;
+}
+
+/* TOTALIZADOR */
+#apuracao-totalizador {
+  text-align: right;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+/* SEPARADOR ENTRE GRÁFICOS */
+.graph-separator {
+  border-top: 1px solid #ccc;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+/* MENU HAMBÚRGUER E MOBILE */
 @media (max-width: 768px) {
-  /* Barra lateral (radio e checklist) em dispositivos móveis */
+  /* BOTÃO MENU */
+  #btn-toggle-menu {
+    display: block;
+    margin: 10px;
+    z-index: 1100;
+    position: relative;
+  }
+
+  #side-menu {
+    display: none;
+  }
+
   .fixed-radio-items {
-    width: 100%;  /* Barra lateral ocupa toda a largura da tela */
-    position: relative;  /* Barra lateral não será fixa em dispositivos móveis */
-    margin-bottom: 10px;  /* Adiciona um espaçamento abaixo */
+    width: 85%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 15px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
   }
 
-  /* Centralizando imagens na barra lateral */
   .fixed-radio-items img {
-    display: block;  /* Faz a imagem ser um bloco */
-    margin-left: auto;  /* Aplica margem automática à esquerda */
-    margin-right: auto;  /* Aplica margem automática à direita */
-    width: 80%;  /* Ajusta a largura da imagem */
-    margin-bottom: 10px;  /* Adiciona espaçamento abaixo das imagens */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    margin-bottom: 10px;
   }
 
-  /* Área dos gráficos */
+  /* CONTEÚDO OCUPA 100% */
+  #apuracao-container,
+  #dynamic-content-container,
   #dynamic-content-container-right {
-    width: 100%;  /* Gráficos ocuparão toda a largura da tela */
-    margin-left: 0;  /* Remove a margem esquerda */
-    text-align: center;  /* Centraliza os gráficos */
+    width: 100%;
+    margin-left: 0;
   }
 
-  /* Centralizando os cards dos gráficos na tela */
-  .card {
-    width: 100%;  /* Ajusta a largura dos cards para ocupar 90% da tela */
-    margin: 10px auto;  /* Centraliza os cards e mantém o espaçamento de 10px entre eles */
+  /* GRÁFICOS GERAIS */
+  .dash-graph,
+  .js-plotly-plot {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    height: auto !important;
+    min-height: 300px;
+    overflow: visible !important;
+    box-sizing: border-box;
   }
 
-  /* Centraliza os cards dentro do contêiner */
-  .container-fluid {
+  .card-grafico {
+    padding: 0 !important;
+    box-sizing: border-box;
+    overflow: visible !important;
+  }
+
+  /* LEGENDAS REDUZIDAS */
+  .js-plotly-plot .yaxislayer-above text {
+    font-size: 10px !important;
+  }
+
+  /* TOTALIZADOR CENTRALIZADO */
+  #apuracao-totalizador {
+    text-align: center !important;
+    font-size: 0.9rem;
+    margin-top: 15px;
+  }
+
+  /* CARDS DE APURAÇÃO ABAIXO DO GRÁFICO */
+  .apuracao-row {
     display: flex;
-    justify-content: center;  /* Centraliza os cards horizontalmente */
-    align-items: flex-start;  /* Alinha os cards no topo do contêiner */
-    flex-direction: column;  /* Organiza os itens em uma coluna */
-    padding: 10px;
+    flex-direction: column;
   }
+
+  #apuracao-col-grafico,
+  #apuracao-col-cards {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  /* CARDS COMPACTADOS NO MOBILE */
+  #apuracao-cards .card-resumo {
+    width: 80%;
+    margin: 10px auto;
+  }
+
+  /* GRÁFICOS DE EFETIVOS AJUSTADOS NO MOBILE */
+  .grafico-efetivo-card {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  /* 🔧 AJUSTES VISUAIS NO MOBILE (SEM SCROLL) */
+  .grafico-efetivo .js-plotly-plot {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box;
+    overflow: hidden !important;
+  }
+
+  .grafico-efetivo .legend {
+    position: relative !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .grafico-efetivo .svg-container {
+    overflow: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  } 
+
+  .grafico-efetivo-card .card-body {
+  padding: 10px !important;
+  }
+
+/* LEGENDA DENTRO DO CARD NO MOBILE */
+  .grafico-efetivo .js-plotly-plot .legend {
+    position: relative !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    text-align: center !important;
+    left: 0 !important;
+    padding-right: 10px !important;
+    box-sizing: border-box;
+  }
+
+  .grafico-efetivo .ytitle{
+    display: none !important;
+  }
+
 }
-
-
-

@@ -7,8 +7,24 @@ import plotly.graph_objects as go
 def layout_efetivos():
     return dbc.Row([
         *[
-            dbc.Col(dbc.Card(dbc.CardBody([dcc.Graph(id=f'fig{i}_efetivos')])),
-                    id=f'col{i}_efetivos', xs=12, md=6)
+            dbc.Col(
+                dbc.Card(
+                    dbc.CardBody([
+                        dcc.Graph(
+                            id=f'fig{i}_efetivos',
+                            className="grafico-efetivo",
+                            style={
+                                "width": "100%",
+                                "maxWidth": "100%",
+                                "height": "500px",  # ✅ altura controlada
+                                "width": "100%"  # ✅ largura controlada   
+                            }
+                        )
+                    ]),
+                    className="grafico-efetivo-card"
+                ),
+                id=f'col{i}_efetivos', xs=12, md=6
+            )
             for i in range(10)
         ]
     ])
