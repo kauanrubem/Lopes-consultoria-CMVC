@@ -103,8 +103,7 @@ def registrar_callbacks_total(app):
                 xaxis_title='Valor (R$)' if is_currency else 'Quantidade',
                 yaxis=dict(autorange='reversed'),
                 xaxis=dict(tickvals=[]),
-                legend=dict(title='Legenda', orientation='v', x=1.02, y=1),
-                margin=dict(r=150)
+                legend=dict(title='Legenda', orientation='v', x=1.02, y=1)
             )
             return fig
 
