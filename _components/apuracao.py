@@ -125,11 +125,8 @@ def registrar_callbacks_apuracao(app):
             totais["Lote"].append(nome)
             totais["Total Somado (R$)"].append(base + outros)
 
-        totais["Lote"].reverse()
-        totais["Total Somado (R$)"].reverse()
         texto = [formatar_valor(v) for v in totais["Total Somado (R$)"]]
 
-        # Abreviar nomes para exibição
         def abreviar_lote(nome):
             mapa = {
                 "Lote 01 - Efetivos": "Efetivos",
@@ -143,11 +140,9 @@ def registrar_callbacks_apuracao(app):
 
         nomes_exibidos = [abreviar_lote(lote) for lote in totais["Lote"]]
 
-        # Detectar se é mobile via user-agent
         user_agent = flask.request.headers.get("User-Agent", "")
         is_mobile = "Mobile" in user_agent or "Android" in user_agent or "iPhone" in user_agent
 
-        # Criar gráfico
         fig = go.Figure()
         if is_mobile:
             fig.add_trace(go.Bar(
