@@ -7,7 +7,7 @@ import flask
 
 def layout_apuracao():
     return dbc.Card([
-        dbc.CardHeader("Apuração CF art. 29-A"),
+        dbc.CardHeader("Apuração CF art. 29-A", className="text-center"),
         dbc.CardBody([
             dbc.Row([
                 dbc.Col(
@@ -150,6 +150,7 @@ def registrar_callbacks_apuracao(app):
             textposition='auto',
             texttemplate='%{text}'
         ))
+
         fig.update_layout(
             title="Totais de Cada Lote (Salário Base + Outros Vencimentos)",
             xaxis_title="Lote",

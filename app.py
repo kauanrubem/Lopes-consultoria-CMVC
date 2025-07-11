@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html
+from dash import Dash, dcc, html, ctx
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from _components.inicial import inicial_layout
@@ -91,17 +91,25 @@ def atualizar_dados(_):
     df = carregar_dados_drive()
     return df.to_dict('records')
 
-# ✅ Callback: abrir/fechar menu no mobile
 @app.callback(
     Output("side-menu", "style"),
     Input("btn-toggle-menu", "n_clicks"),
+    Input("main_variable", "value"),
+    Input("apuracao_checklist", "value"),
     State("side-menu", "style"),
     prevent_initial_call=True
 )
-def toggle_menu(n_clicks, current_style):
-    if not current_style or current_style.get("display") == "none":
-        return {"display": "block"}
+def toggle_menu(btn_clicks, main_var, checklist_value, current_style):
+    triggered_id = ctx.triggered_id
+
+    if triggered_id == "btn-toggle-menu":
+        # Abrir/fechar com o botão
+        if not current_style or current_style.get("display") == "none":
+            return {"display": "block"}
+        else:
+            return {"display": "none"}
     else:
+        # Fechar ao selecionar algo no menu
         return {"display": "none"}
 
 # Registro de callbacks
